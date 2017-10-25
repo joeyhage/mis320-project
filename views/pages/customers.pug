@@ -1,0 +1,34 @@
+html
+    include includes/head
+    body
+        include includes/navigation
+        div.container
+            div.column.is-8
+                div.field
+                    label.label Customer Search
+                    div.control
+                        input.input#search-query(
+                            type='text'
+                            placeholder='First Name, Last Name, Phone #, or Email'
+                            autofocus
+                        )
+            hr
+            table.table.is-striped.is-hoverable
+                mixin columns
+                    tr
+                        th First Name
+                        th Last Name
+                        th Property Name
+                        th Address
+                thead: +columns
+                if customers.length > 10
+                    tfoot: +columns
+                tbody
+                    for customer in customers
+                        tr
+                            td=customer.firstName
+                            td=customer.lastName
+                            td=customer.property
+                            td=customer.address
+
+        include includes/foot

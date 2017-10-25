@@ -1,0 +1,14 @@
+nav.navbar.is-light(role='navigation' aria-label='main navigation')
+    div.navbar-brand
+        a.navbar-item(href='/')
+            img(src='/img/brand.png' alt='Hartley Properties')
+        button.button.navbar-burger
+            span
+            span
+            span
+    div.navbar-menu
+        div.navbar-start
+            a.navbar-item(class=(path === '/' && 'is-active') href='/') Dashboard
+            a.navbar-item(class=(path === '/customers' && 'is-active') href='/customers') Customers
+            a.navbar-item(class=(path === '/admin' && 'is-active') href='/admin') Administration
+        div.navbar-end
