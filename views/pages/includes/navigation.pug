@@ -8,7 +8,12 @@ nav.navbar.is-light(role='navigation' aria-label='main navigation')
             span
     div.navbar-menu
         div.navbar-start
-            a.navbar-item(class=(path === '/' && 'is-active') href='/') Dashboard
-            a.navbar-item(class=(path === '/customers' && 'is-active') href='/customers') Customers
-            a.navbar-item(class=(path === '/admin' && 'is-active') href='/admin') Administration
+            a.navbar-item(class=(parent === 'dashboard' && 'is-active') href='/') Dashboard
+            a.navbar-item(class=(parent === 'tenants' && 'is-active') href='/tenants') Tenants
+            a.navbar-item(class=(parent === 'administration' && 'is-active') href='/admin') Administration
         div.navbar-end
+if subheadings && subheadings.length > 0
+    div.tabs: ul
+        for subheading in subheadings
+            li(class=((page ? page === subheading.page : parent === subheading.page) && 'is-active'))
+                a(href=subheading.href)=subheading.name

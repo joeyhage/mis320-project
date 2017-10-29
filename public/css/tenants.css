@@ -4,3 +4,6 @@ table {
 th:nth-of-type(1), th:nth-of-type(2), th:nth-of-type(3) {
     width: 20%;
 }
+tr {
+    cursor: pointer;
+}

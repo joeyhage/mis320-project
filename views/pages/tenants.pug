@@ -21,14 +21,14 @@ html
                         th Property Name
                         th Address
                 thead: +columns
-                if customers.length > 10
-                    tfoot: +columns
-                tbody
-                    for customer in customers
-                        tr
-                            td=customer.firstName
-                            td=customer.lastName
-                            td=customer.property
-                            td=customer.address
+                if tenants
+                    if tenants.length > 10
+                        tfoot: +columns
+                    tbody: for tenant in tenants
+                            tr(id=tenant.tenantID)
+                                td=tenant.firstName
+                                td=tenant.lastName
+                                td=tenant.propertyID
+                                td=tenant.address
 
         include includes/foot

@@ -1,0 +1,15 @@
+{
+	"tenants": [{
+		"tenantID": "1",
+		"firstName": "Joey",
+		"lastName": "Hage",
+		"propertyID": "Property 1",
+		"address": "1234 Main St."
+	}, {
+		"tenantID": "2",
+		"firstName": "Zach",
+		"lastName": "Hartley",
+		"propertyID": "Property 2",
+		"address": "4321 1st St."
+	}]
+}

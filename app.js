@@ -1,5 +1,6 @@
 const express = require('express'),
-	app = express();
+	app = express(),
+	tenants = require('./public/exampleData/tenants.json');
 
 app.set('port', (process.env.PORT || 5000));
 
@@ -9,36 +10,82 @@ app.use('/css', express.static(__dirname + '/node_modules/bulma/css/'));
 app.set('view engine', 'pug');
 
 app.get('/*', (req, res) => {
-	const renderData = {
-		path: req.path
-	};
-	switch (req.path) {
-		case '/':
-			renderData.title = 'Dashboard';
+	let parent, page, view, match, pageData;
+	if (req.path.match(/\/$/)) {
+		parent = 'dashboard';
+	} else if (req.path.match(/\/tenants\/?$/)) {
+		parent = 'tenants';
+	} else if (match = req.path.match(/\/tenants\/([0-9]+)\/?$/)) {
+		parent = 'tenants';
+		page = 'tenant';
+		pageData = match[1];
+	} else if (req.path.match(/\/admin\/?$/)) {
+		parent = 'administration';
+	} else if (match = req.path.match(/\/admin\/([a-z]+)\/?$/)) {
+		parent = 'administration';
+		page = match[1];
+	} else {
+		return res.redirect('/');
+	}
+	view = `pages/${parent}${page ? '/' + page : ''}`;
+	res.render(view, getRenderData(parent, page, pageData));
+});
+
+const getRenderData = (parent, page, pageData) => ({
+	parent,
+	page,
+	...getTemplateData(parent),
+	...getPageData(page ? page : parent, pageData)
+});
+
+const getTemplateData = parent => {
+	switch (parent) {
+		case 'dashboard':
+			return {
+				title: 'Dashboard'
+			};
 			break;
-		case '/customers':
-			renderData.title = 'Customers';
-			renderData.customers = [{
-				firstName: 'Joey',
-				lastName: 'Hage',
-				property: '1',
-				address: '1234 Main St.'
-			}, {
-				firstName: 'Zach',
-				lastName: 'Hartley',
-				property: '2',
-				address: '4321 1st St.'
-			}];
+		case 'tenants':
+			return {
+				title: 'Tenants',
+				subheadings: [{
+					name: 'Search',
+					href: '/tenants',
+					page: 'tenants'
+				}]
+			};
 			break;
-		case '/admin':
-			renderData.title = 'Administration';
+		case 'administration':
+			return {
+				title: 'Administration',
+				subheadings: [{
+					name: 'Billing',
+					href: '/admin/billing',
+					page: 'billing'
+				}],
+			};
 			break;
 		default:
-			return res.redirect('/');
+			return;
 	}
-	const view = 'pages' + (req.path === '/' ? '/dashboard' : req.path);
-  	res.render(view, renderData);
-});
+};
+
+const getPageData = (page, pageData) => {
+	switch (page) {
+		case 'tenants':
+			return tenants;
+			break;
+		case 'tenant':
+			for (tenant of tenants.tenants) {
+				if (tenant.tenantID === pageData) {
+					return tenant;
+				}
+			}
+			break;
+		default:
+			return;
+	}
+};
 
 app.listen(app.get('port'), () => {
   	console.log('Node app is running on port', app.get('port'));

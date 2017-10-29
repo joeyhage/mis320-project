@@ -1,0 +1,18 @@
+html
+    include ../includes/head
+    body
+        include ../includes/navigation
+        if (tenant)
+            div.container
+                h1.title.is-spaced #{tenant.lastName}, #{tenant.firstName}
+                h2.subtitle #{tenant.propertyID}
+                div.card(style='padding:20px')
+                    div
+                        strong Tenant ID:
+                        |
+                        | #{tenant.tenantID}
+                    div
+                        strong Tenant Address:
+                        |
+                        | #{tenant.address}
+        include ../includes/foot

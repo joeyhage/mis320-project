@@ -4,4 +4,5 @@ head
     link(rel='shortcut icon' href='/img/favicon.ico')
 
     link(rel='stylesheet' href='/css/bulma.css')
-    link(rel='stylesheet' href=`/css${path === '/' ? '/dashboard' : path}.css` )
+    link(rel='stylesheet' href='/css/main.css')
+    link(rel='stylesheet' href=`/css/${parent}${page ? '/' + page : ''}.css`)
