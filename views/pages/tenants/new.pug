@@ -1,0 +1,25 @@
+html
+    include ../includes/head
+    body
+        include ../includes/navigation
+        div.container: form
+            div.columns
+                div.column
+                    div.field
+                        label.label First Name
+                        div.control: input.input(type='text')
+                div.column
+                    div.field
+                        label.label Last Name
+                        div.control: input.input(type='text')
+            div.columns
+                div.column
+                    div.field
+                        label.label Phone Number
+                        div.control: input.input(type='tel')
+                div.column
+                    div.field
+                        label.label Email Address
+                        div.control: input.input(type='email')
+            div.control: button.button.is-link(type='submit') Submit
+        include ../includes/foot

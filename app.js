@@ -1,6 +1,6 @@
 const express = require('express'),
 	app = express(),
-	tenants = require('./public/exampleData/tenants.json');
+	tenants = require('./exampleData/tenants.json');
 
 app.set('port', (process.env.PORT || 5000));
 
@@ -19,6 +19,9 @@ app.get('/*', (req, res) => {
 		parent = 'tenants';
 		page = 'tenant';
 		pageData = match[1];
+	} else if (match = req.path.match(/\/tenants\/([a-z]+)\/?$/)) {
+		parent = 'tenants';
+		page = match[1];
 	} else if (req.path.match(/\/admin\/?$/)) {
 		parent = 'administration';
 	} else if (match = req.path.match(/\/admin\/([a-z]+)\/?$/)) {
@@ -52,6 +55,10 @@ const getTemplateData = parent => {
 					name: 'Search',
 					href: '/tenants',
 					page: 'tenants'
+				}, {
+					name: 'New Tenant',
+					href: '/tenants/new',
+					page: 'new'
 				}]
 			};
 			break;
