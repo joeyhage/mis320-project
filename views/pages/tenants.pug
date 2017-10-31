@@ -19,7 +19,7 @@ html
                         th First Name
                         th Last Name
                         th Property Name
-                        th Address
+                        th Phone Number
                 thead: +columns
                 if tenants
                     if tenants.length > 10
@@ -29,6 +29,5 @@ html
                                 td=tenant.firstName
                                 td=tenant.lastName
                                 td=tenant.propertyID
-                                td=tenant.address
-
+                                td=tenant.phoneNumber
         include includes/foot

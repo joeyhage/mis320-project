@@ -5,12 +5,6 @@
         margin-left: 143px;
     }
 }
-li.is-hidden-desktop {
-    background-color: #cfd4df;
-}
-div.navbar-brand>div.navbar-item.is-hidden-desktop>a {
-    padding: 0 15px;
-}
 
 /* All */
 

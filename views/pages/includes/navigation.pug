@@ -1,6 +1,7 @@
 nav.navbar.is-light(role='navigation' aria-label='main navigation')
     div.navbar-brand
         a.navbar-item(href='/'): img(src='/img/brand.png' alt='Hartley Properties')
+        a.navbar-item.is-hidden-desktop(href=`/${parent}`) #{parent.charAt(0).toUpperCase() + parent.slice(1)}
         button.button.navbar-burger
             span
             span
@@ -14,8 +15,6 @@ nav.navbar.is-light(role='navigation' aria-label='main navigation')
         div.navbar-end
 if subheadings && subheadings.length > 0
     div.tabs: ul
-        li.is-hidden-desktop
-            a(href=`/${parent}`) #{parent.charAt(0).toUpperCase() + parent.slice(1)}
         for subheading in subheadings
             li(class=((page ? page === subheading.page : parent === subheading.page) && 'is-active'))
                 a(href=subheading.href)=subheading.name
