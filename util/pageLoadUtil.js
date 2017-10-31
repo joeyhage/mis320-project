@@ -6,7 +6,6 @@ const getRenderData = (parent, page, pageData) => ({
 	...getTemplateData(parent),
 	...getPageData(page ? page : parent, pageData)
 });
-
 const getTemplateData = parent => {
 	switch (parent) {
 		case 'dashboard':
@@ -28,16 +27,6 @@ const getTemplateData = parent => {
 				}]
 			};
 			break;
-		case 'administration':
-			return {
-				title: 'Administration',
-				subheadings: [{
-					name: 'Billing',
-					href: '/admin/billing',
-					page: 'billing'
-				}],
-			};
-			break;
 		case 'maintenance':
 			return {
 				title: 'Maintenance',
@@ -49,6 +38,24 @@ const getTemplateData = parent => {
 					name: 'Purchase Orders',
 					href: '/maintenance/purchase-orders',
 					page: 'purchase-orders'
+				}, {
+					name: 'Vendors',
+					href: '/maintenance/vendors',
+					page: 'vendors'
+				}],
+			};
+			break;
+		case 'administration':
+			return {
+				title: 'Administration',
+				subheadings: [{
+					name: 'Billing',
+					href: '/admin/billing',
+					page: 'billing'
+				}, {
+					name: 'Employees',
+					href: '/admin/employees',
+					page: 'employees'
 				}],
 			};
 			break;

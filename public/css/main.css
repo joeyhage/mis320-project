@@ -1,12 +1,30 @@
 /* Navigation */
 
-@media (min-width: 1024px) {
+@media screen and (min-width: 1024px) {
     div.tabs li:nth-of-type(1) {
         margin-left: 143px;
     }
 }
 
-div.navbar-brand>a.navbar-item.is-hidden-desktop {
-    margin-left: auto;
+div.navbar-brand>div.navbar-item.is-hidden-desktop {
     font-weight: bold;
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, 15%);
+}
+
+/* All */
+
+@media screen and (max-width: 1023px) {
+    .container {
+        margin: auto 24px;
+    }
+}
+
+.title {
+    color: #384B6C;
+}
+
+div.navbar-menu a.navbar-item.is-active {
+    background-color: #cfd4df !important;
 }
