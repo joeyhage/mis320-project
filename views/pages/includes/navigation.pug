@@ -1,7 +1,7 @@
 nav.navbar.is-light(role='navigation' aria-label='main navigation')
     div.navbar-brand
-        a.navbar-item(href='/')
-            img(src='/img/brand.png' alt='Hartley Properties')
+        a.navbar-item(href='/'): img(src='/img/brand.png' alt='Hartley Properties')
+        a.navbar-item.is-hidden-desktop #{parent.charAt(0).toUpperCase() + parent.slice(1)}
         button.button.navbar-burger
             span
             span
@@ -11,6 +11,7 @@ nav.navbar.is-light(role='navigation' aria-label='main navigation')
             a.navbar-item(class=(parent === 'dashboard' && 'is-active') href='/') Dashboard
             a.navbar-item(class=(parent === 'tenants' && 'is-active') href='/tenants') Tenants
             a.navbar-item(class=(parent === 'administration' && 'is-active') href='/admin') Administration
+            a.navbar-item(class=(parent === 'maintenance' && 'is-active') href='/maintenance') Maintenance
         div.navbar-end
 if subheadings && subheadings.length > 0
     div.tabs: ul

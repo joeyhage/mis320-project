@@ -8,11 +8,15 @@ html
                 h2.subtitle #{tenant.propertyID}
                 div.card(style='padding:20px')
                     div
-                        strong Tenant ID:
-                        |
-                        | #{tenant.tenantID}
-                    div
                         strong Tenant Address:
                         |
                         | #{tenant.address}
+                    div
+                        strong Tenant Phone Number:
+                        |
+                        | #{tenant.phoneNumber}
+                    div
+                        strong Tenant Email:
+                        |
+                        | #{tenant.emailAddress}
         include ../includes/foot

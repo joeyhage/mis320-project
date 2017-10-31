@@ -5,3 +5,8 @@
         margin-left: 143px;
     }
 }
+
+div.navbar-brand>a.navbar-item.is-hidden-desktop {
+    margin-left: auto;
+    font-weight: bold;
+}
