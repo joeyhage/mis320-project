@@ -50,11 +50,11 @@ const getTemplateData = parent => {
 				title: 'Administration',
 				subheadings: [{
 					name: 'Billing',
-					href: '/admin/billing',
+					href: '/administration/billing',
 					page: 'billing'
 				}, {
 					name: 'Employees',
-					href: '/admin/employees',
+					href: '/administration/employees',
 					page: 'employees'
 				}],
 			};

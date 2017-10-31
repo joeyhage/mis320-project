@@ -5,12 +5,11 @@
         margin-left: 143px;
     }
 }
-
-div.navbar-brand>div.navbar-item.is-hidden-desktop {
-    font-weight: bold;
-    position: absolute;
-    left: 50%;
-    transform: translate(-50%, 15%);
+li.is-hidden-desktop {
+    background-color: #cfd4df;
+}
+div.navbar-brand>div.navbar-item.is-hidden-desktop>a {
+    padding: 0 15px;
 }
 
 /* All */
@@ -20,11 +19,9 @@ div.navbar-brand>div.navbar-item.is-hidden-desktop {
         margin: auto 24px;
     }
 }
-
 .title {
-    color: #384B6C;
+    color: #384b6c;
 }
-
 div.navbar-menu a.navbar-item.is-active {
     background-color: #cfd4df !important;
 }

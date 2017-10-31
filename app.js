@@ -27,9 +27,9 @@ app.get('/*', (req, res) => {
 	} else if (match = req.path.match(/\/maintenance\/([a-z-]+)\/?$/)) {
 		parent = 'maintenance';
 		page = match[1];
-	} else if (req.path.match(/\/admin\/?$/)) {
+	} else if (req.path.match(/\/administration\/?$/)) {
 		parent = 'administration';
-	} else if (match = req.path.match(/\/admin\/([a-z-]+)\/?$/)) {
+	} else if (match = req.path.match(/\/administration\/([a-z-]+)\/?$/)) {
 		parent = 'administration';
 		page = match[1];
 	} else {
