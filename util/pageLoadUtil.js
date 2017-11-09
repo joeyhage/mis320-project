@@ -1,11 +1,17 @@
 const tenants = require('../exampleData/tenant.json');
 
-const getRenderData = (parent, page, pageData) => ({
-	parent,
-	page,
-	...getTemplateData(parent),
-	...getPageData(page ? page : parent, pageData)
-});
+const getRenderData = async (parent, page, pageData, connection) => {
+	const renderData = {
+		parent,
+		page,
+		...getTemplateData(parent)
+	};
+	const results = await getPageData(page ? page : parent, pageData, connection);
+	return {
+		...renderData,
+		...results
+	}
+};
 const getTemplateData = parent => {
 	switch (parent) {
 		case 'dashboard':
@@ -64,22 +70,31 @@ const getTemplateData = parent => {
 	}
 };
 
-const getPageData = (page, pageData) => {
-	switch (page) {
-		case 'tenants':
-			return tenants;
-			break;
-		case 'tenant':
-			for (const tenant of tenants.tenants) {
-				if (tenant.tenantID === parseInt(pageData)) {
-					return {tenant};
-				}
-			}
-			break;
-		default:
-			return;
-	}
-};
+const getPageData = (page, pageData, connection) =>
+	new Promise(resolve => {
+		switch (page) {
+			case 'tenants':
+				connection.query(
+					'select * from PERSON p, TENANT t where p.personid=t.tenantid and person_type like \'%T%\'',
+					(error, results) => {
+						return resolve({tenants: results});
+					}
+				);
+				break;
+			case 'tenant':
+				connection.query(
+					'select * from PERSON p, TENANT t where p.personid=t.tenantid and t.tenantid=?',
+					[parseInt(pageData)],
+					(error, results) => {
+						return resolve({tenant: results[0]});
+					}
+				);
+				break;
+			default:
+				return resolve();
+		}
+	})
+;
 
 module.exports = {
 	getRenderData

@@ -18,16 +18,14 @@ html
                     tr
                         th First Name
                         th Last Name
-                        th Property Name
                         th Phone Number
                 thead: +columns
                 if tenants
                     if tenants.length > 10
                         tfoot: +columns
                     tbody: for tenant in tenants
-                            tr(id=tenant.tenantID)
-                                td=tenant.firstName
-                                td=tenant.lastName
-                                td=tenant.propertyID
-                                td=tenant.phoneNumber
+                            tr(id=tenant.TenantID)
+                                td=tenant.First_Name
+                                td=tenant.Last_Name
+                                td=tenant.Phone_Number
         include includes/foot
