@@ -27,5 +27,5 @@ html
                             tr(id=tenant.TenantID)
                                 td=tenant.First_Name
                                 td=tenant.Last_Name
-                                td=tenant.Phone_Number
+                                td #{tenant.Phone_Number.substring(0,3)}-#{tenant.Phone_Number.substring(3,6)}-#{tenant.Phone_Number.substring(6)}
         include includes/foot
