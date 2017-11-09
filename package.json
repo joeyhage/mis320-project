@@ -18,9 +18,8 @@
   "homepage": "https://github.com/joeyhage/mis320-project#readme",
   "dependencies": {
     "bulma": "^0.6.0",
-    "dotenv": "^4.0.0",
     "express": "^4.16.2",
-    "mysql": "^2.15.0",
+    "pg": "^7.4.0",
     "pug": "^2.0.0-rc.4"
   },
   "engines": {

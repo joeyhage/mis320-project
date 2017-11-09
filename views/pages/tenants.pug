@@ -24,8 +24,8 @@ html
                     if tenants.length > 10
                         tfoot: +columns
                     tbody: for tenant in tenants
-                            tr(id=tenant.TenantID)
-                                td=tenant.First_Name
-                                td=tenant.Last_Name
-                                td #{tenant.Phone_Number.substring(0,3)}-#{tenant.Phone_Number.substring(3,6)}-#{tenant.Phone_Number.substring(6)}
+                            tr(id=tenant.tenantid)
+                                td=tenant.first_name
+                                td=tenant.last_name
+                                td #{tenant.phone_number.substring(0,3)}-#{tenant.phone_number.substring(3,6)}-#{tenant.phone_number.substring(6)}
         include includes/foot

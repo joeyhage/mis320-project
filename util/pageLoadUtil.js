@@ -1,12 +1,12 @@
 const tenants = require('../exampleData/tenant.json');
 
-const getRenderData = async (parent, page, pageData, connection) => {
+const getRenderData = async (parent, page, pageData, client) => {
 	const renderData = {
 		parent,
 		page,
 		...getTemplateData(parent)
 	};
-	const results = await getPageData(page ? page : parent, pageData, connection);
+	const results = await getPageData(page ? page : parent, pageData, client);
 	return {
 		...renderData,
 		...results
@@ -70,31 +70,25 @@ const getTemplateData = parent => {
 	}
 };
 
-const getPageData = (page, pageData, connection) =>
-	new Promise(resolve => {
-		switch (page) {
-			case 'tenants':
-				connection.query(
-					'select * from PERSON p, TENANT t where p.personid=t.tenantid and person_type like \'%T%\'',
-					(error, results) => {
-						return resolve({tenants: results});
-					}
-				);
-				break;
-			case 'tenant':
-				connection.query(
-					'select * from PERSON p, TENANT t where p.personid=t.tenantid and t.tenantid=?',
-					[parseInt(pageData)],
-					(error, results) => {
-						return resolve({tenant: results[0]});
-					}
-				);
-				break;
-			default:
-				return resolve();
-		}
-	})
-;
+const getPageData = (page, pageData, client) => ({
+	'tenants': async () => {
+		await client.connect();
+		const results = await client.query(
+			'select * from person p, tenant t where p.personid=t.tenantid and person_type like \'%T%\''
+		);
+		await client.end();
+		return {tenants: results.rows};
+	},
+	'tenant': async () => {
+		await client.connect();
+		const results = await client.query(
+			'select * from person p, tenant t where p.personid=t.tenantid and t.tenantid=$1',
+			[parseInt(pageData)]
+		);
+		await client.end();
+		return {tenant: results.rows[0]};
+	}
+})[page]();
 
 module.exports = {
 	getRenderData

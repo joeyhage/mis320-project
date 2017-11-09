@@ -4,19 +4,19 @@ html
         include ../includes/navigation
         if (tenant)
             div.container
-                h1.title.is-spaced #{tenant.Last_Name}, #{tenant.First_Name}
+                h1.title.is-spaced #{tenant.last_name}, #{tenant.first_name}
                 h2.subtitle Property Name (Placeholder)
                 div.card(style='padding:20px')
                     div
                         strong Tenant Address:
                         |
-                        | #{tenant.Street}, #{tenant.City}, #{tenant.State} #{tenant.Zipcode}
+                        | #{tenant.street}, #{tenant.city}, #{tenant.state} #{tenant.zipcode}
                     div
                         strong Tenant Phone Number:
                         |
-                        | #{tenant.Phone_Number.substring(0,3)}-#{tenant.Phone_Number.substring(3,6)}-#{tenant.Phone_Number.substring(6)}
+                        | #{tenant.phone_number.substring(0,3)}-#{tenant.phone_number.substring(3,6)}-#{tenant.phone_number.substring(6)}
                     div
                         strong Tenant Email:
                         |
-                        | #{tenant.Email}
+                        | #{tenant.email}
         include ../includes/foot

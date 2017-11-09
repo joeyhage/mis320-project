@@ -1,9 +1,7 @@
 const express = require('express'),
 	app = express(),
-	mysql = require('mysql'),
+	{ Client } = require('pg'),
 	{ getRenderData } = require('./util/pageLoadUtil');
-
-let connection;
 
 app.set('port', (process.env.PORT || 5000));
 
@@ -13,6 +11,10 @@ app.use('/css', express.static(__dirname + '/node_modules/bulma/css/'));
 app.set('view engine', 'pug');
 
 app.get('/*', async (req, res) => {
+	const client = new Client({
+		connectionString: process.env.DATABASE_URL,
+		ssl: true,
+	});
 	let parent, page, view, match, pageData;
 	if (req.path.match(/\/$/)) {
 		parent = 'dashboard';
@@ -39,21 +41,10 @@ app.get('/*', async (req, res) => {
 		return res.redirect('/');
 	}
 	view = `pages/${parent}${page ? '/' + page : ''}`;
-	const renderData = await getRenderData(parent, page, pageData, connection);
+	const renderData = await getRenderData(parent, page, pageData, client);
 	res.render(view, renderData);
 });
 
 app.listen(app.get('port'), () => {
-	connection = mysql.createConnection({
-		host: process.env.DB_HOST,
-		database: process.env.DB_NAME,
-		user: process.env.DB_USER,
-		password: process.env.DB_PASS
-	});
-	connection.connect(err => {
-		if (err) {
-			console.error('error connecting: ' + err.stack);
-		}
-	});
   	console.log('Node app is running on port', app.get('port'));
 });
