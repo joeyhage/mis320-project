@@ -70,7 +70,14 @@ const getTemplateData = parent => {
 	}
 };
 
-const getPageData = (page, pageData, client) => ({
+const getPageData = async (page, pageData, client) => {
+	const lookupDataForPage = pageDataSwitch(pageData, client)[page];
+	if (lookupDataForPage) {
+		return await lookupDataForPage();
+	}
+};
+
+const pageDataSwitch = (pageData, client) => ({
 	'tenants': async () => {
 		await client.connect();
 		const results = await client.query(
@@ -88,7 +95,7 @@ const getPageData = (page, pageData, client) => ({
 		await client.end();
 		return {tenant: results.rows[0]};
 	}
-})[page]();
+});
 
 module.exports = {
 	getRenderData
