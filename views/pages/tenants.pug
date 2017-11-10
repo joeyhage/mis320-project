@@ -3,15 +3,17 @@ html
     body
         include includes/navigation
         div.container
-            div.column.is-8
+            form#tenant-search(action='/tenants/search' method='get')
                 div.field
-                    label.label Customer Search
+                    label.label Tenant Search
                     div.control
-                        input.input#search-query(
+                        input.input(
                             type='text'
+                            name='searchQuery'
                             placeholder='First Name, Last Name, Phone #, or Email'
                             autofocus
                         )
+                div.control: button.button.is-link(type='submit') Submit
             hr
             table.table.is-striped.is-hoverable
                 mixin columns

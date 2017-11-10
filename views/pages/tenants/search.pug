@@ -1,0 +1,21 @@
+html
+    include ../includes/head
+    body
+        include ../includes/navigation
+        div.container
+            table.table.is-striped.is-hoverable
+                mixin columns
+                    tr
+                        th First Name
+                        th Last Name
+                        th Phone Number
+                thead: +columns
+                if tenants
+                    if tenants.length > 10
+                        tfoot: +columns
+                    tbody: for tenant in tenants
+                        tr(id=tenant.tenantid)
+                            td=tenant.first_name
+                            td=tenant.last_name
+                            td #{tenant.phone_number.substring(0,3)}-#{tenant.phone_number.substring(3,6)}-#{tenant.phone_number.substring(6)}
+        include ../includes/foot

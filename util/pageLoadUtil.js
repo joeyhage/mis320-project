@@ -1,12 +1,13 @@
 const tenants = require('../exampleData/tenant.json');
+const sqlUtil = require('./sqlUtil');
 
-const getRenderData = async (parent, page, pageData, client) => {
+const getRenderData = async (parent, page, client, pageData) => {
 	const renderData = {
 		parent,
 		page,
 		...getTemplateData(parent)
 	};
-	const results = await getPageData(page ? page : parent, pageData, client);
+	const results = await getPageData(page ? page : parent, client, pageData);
 	return {
 		...renderData,
 		...results
@@ -24,8 +25,8 @@ const getTemplateData = parent => {
 				title: 'Tenants',
 				subheadings: [{
 					name: 'Search',
-					href: '/tenants',
-					page: 'tenants'
+					href: '/tenants/search',
+					page: 'search'
 				}, {
 					name: 'New Tenant',
 					href: '/tenants/new',
@@ -70,30 +71,26 @@ const getTemplateData = parent => {
 	}
 };
 
-const getPageData = async (page, pageData, client) => {
-	const lookupDataForPage = pageDataSwitch(pageData, client)[page];
+const getPageData = async (page, client, pageData) => {
+	const lookupDataForPage = pageDataSwitch(client, pageData)[page];
+	if (process.env.DEBUG) {
+		console.log('pageData', pageData);
+		console.log('lookupdataforpage', lookupDataForPage);
+	}
 	if (lookupDataForPage) {
 		return await lookupDataForPage();
 	}
 };
 
-const pageDataSwitch = (pageData, client) => ({
+const pageDataSwitch = (client, pageData) => ({
 	'tenants': async () => {
-		await client.connect();
-		const results = await client.query(
-			'select * from person p, tenant t where p.personid=t.tenantid and person_type like \'%T%\''
-		);
-		await client.end();
-		return {tenants: results.rows};
+		return await sqlUtil.getTenants(client);
 	},
 	'tenant': async () => {
-		await client.connect();
-		const results = await client.query(
-			'select * from person p, tenant t where p.personid=t.tenantid and t.tenantid=$1',
-			[parseInt(pageData)]
-		);
-		await client.end();
-		return {tenant: results.rows[0]};
+		return await sqlUtil.getTenantByID(client, parseInt(pageData));
+	},
+	'search': async () => {
+		return await sqlUtil.searchTenants(client, pageData)
 	}
 });
 

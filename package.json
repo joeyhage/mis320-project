@@ -4,8 +4,9 @@
   "description": "MIS 320 Fall 2017 Group 6 Project for Hartley Properties.",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js"
-  },
+		"start": "node app.js",
+		"local": "heroku local web"
+	},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/joeyhage/mis320-project.git"
@@ -17,6 +18,7 @@
   },
   "homepage": "https://github.com/joeyhage/mis320-project#readme",
   "dependencies": {
+    "body-parser": "^1.18.2",
     "bulma": "^0.6.0",
     "express": "^4.16.2",
     "pg": "^7.4.0",

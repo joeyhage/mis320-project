@@ -1,5 +1,15 @@
+const tenantSearch = document.getElementById('tenant-search');
 const tenantsTable = document.querySelector('table.table');
-const newTenantForm = document.querySelector('form');
+const newTenant = document.getElementById('new-tenant');
+
+if (tenantSearch) {
+	tenantSearch.addEventListener('submit', event => {
+		const searchQuery = event.target.elements.namedItem('searchQuery').value;
+		if (!searchQuery || searchQuery.includes('(') || searchQuery.includes(')')) {
+			event.preventDefault();
+		}
+	});
+}
 if (tenantsTable) {
 	tenantsTable.addEventListener('click', ({target}) => {
 		if (target.tagName === 'TD') {
@@ -7,8 +17,8 @@ if (tenantsTable) {
 		}
 	});
 }
-if (newTenantForm) {
-	document.querySelector('form').addEventListener('submit', event => {
+if (newTenant) {
+	newTenant.addEventListener('submit', event => {
 		event.preventDefault();
 		const formElements = event.target.elements;
 	});
