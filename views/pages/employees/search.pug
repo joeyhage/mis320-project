@@ -1,0 +1,21 @@
+html
+    include ../includes/head
+    body
+        include ../includes/navigation
+        div.container
+            table#employees-table.table.is-striped.is-hoverable
+                mixin columns
+                    tr
+                        th First Name
+                        th Last Name
+                        th Job Title
+                thead: +columns
+                if employees
+                    if employees.length > 10
+                        tfoot: +columns
+                    tbody: for employee in employees
+                        tr(id=employee.employeeid)
+                            td=employee.first_name
+                            td=employee.last_name
+                            td=employee.job_title
+        include ../includes/foot
