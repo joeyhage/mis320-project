@@ -1,64 +1,132 @@
 const express = require('express'),
 	app = express(),
+	session = require('express-session'),
 	bodyParser = require('body-parser'),
-	{ getRenderData } = require('./util/pageLoadUtil'),
+	{ getRenderData, getTemplateData } = require('./util/pageRenderUtil'),
 	{ createClient } = require('./util/sqlUtil');
 
 app.set('port', (process.env.PORT || 5000));
+app.set('view engine', 'pug');
 
 app.use(express.static(__dirname + '/public'));
 app.use('/css', express.static(__dirname + '/node_modules/bulma/css/'));
 app.use(bodyParser.json());
-app.set('view engine', 'pug');
+app.use(session({
+	secret: 'hartley properties',
+	resave: false,
+	saveUninitialized: false,
+	cookie: {maxAge: 60000}
+}));
 
-app.get('/*', async (req, res) => {
-	let parent, page, view, match, pageData;
-	if (req.path.match(/\/$/)) {
-		parent = 'dashboard';
-	} else if (req.path.match(/\/tenants\/?$/)) {
-		parent = 'tenants';
-	} else if (req.path.match(/\/tenants\/search/)) {
-		parent = 'tenants';
-		page = 'search';
-		const searchQuery = req.param('searchQuery');
-		if (!searchQuery) {
+app.use((req, res, next) => {
+	resetSession(req.session);
+	let match;
+	if (/\/$/.test(req.path)) {
+		req.session.parent = 'dashboard';
+	} else if (/\/tenants$/.test(req.path)) {
+		req.session.parent = 'tenants';
+	} else if (/\/tenants\/search/.test(req.path)) {
+		req.session.parent = 'tenants';
+		req.session.page = 'search';
+		const searchQuery = req.query.searchQuery;
+		if (searchQuery) {
+			req.session.tenantSearch = searchQuery;
+		} else if (!req.session.tenantSearch) {
 			return res.redirect('/tenants');
 		}
-		pageData = searchQuery;
-	} else if (match = req.path.match(/\/tenants\/([0-9]+)\/?$/)) {
-		parent = 'tenants';
-		page = 'tenant';
-		pageData = match[1];
-	} else if (match = req.path.match(/\/tenants\/([a-z-]+)\/?$/)) {
-		parent = 'tenants';
-		page = match[1];
-	} else if (req.path.match(/\/maintenance\/?$/)) {
-		parent = 'maintenance';
-	} else if (match = req.path.match(/\/maintenance\/([a-z-]+)\/?$/)) {
-		parent = 'maintenance';
-		page = match[1];
-	} else if (req.path.match(/\/administration\/?$/)) {
-		parent = 'administration';
-	} else if (match = req.path.match(/\/administration\/([a-z-]+)\/?$/)) {
-		parent = 'administration';
-		page = match[1];
+		req.session.pageData = req.session.tenantSearch;
+	} else if (match = req.path.match(/\/tenants\/([0-9]+)$/)) {
+		req.session.parent = 'tenants';
+		req.session.page = 'tenant';
+		req.session.pageData = match[1];
+	} else if (match = req.path.match(/\/tenants\/([a-z-]+)$/)) {
+		req.session.parent = 'tenants';
+		req.session.page = match[1];
+	} else if (/\/maintenance$/.test(req.path)) {
+		req.session.parent = 'maintenance';
+	} else if (match = req.path.match(/\/maintenance\/([a-z-]+)$/)) {
+		req.session.parent = 'maintenance';
+		req.session.page = match[1];
+	} else if (/\/administration$/.test(req.path)) {
+		req.session.parent = 'administration';
+	} else if (match = req.path.match(/\/administration\/([a-z-]+)$/)) {
+		req.session.parent = 'administration';
+		req.session.page = match[1];
+	} else if (/\/employees$/.test(req.path)) {
+		req.session.parent = 'employees';
+	} else if (/\/employees\/search/.test(req.path)) {
+		req.session.parent = 'employees';
+		req.session.page = 'search';
+		const searchQuery = req.query.searchQuery;
+		if (searchQuery) {
+			req.session.employeeSearch = searchQuery;
+		} else if (!req.session.employeeSearch) {
+			return res.redirect('/employees');
+		}
+		req.session.pageData = req.session.employeeSearch;
+	} else if (match = req.path.match(/\/employees\/([0-9]+)$/)) {
+		req.session.parent = 'employees';
+		req.session.page = 'employee';
+		req.session.pageData = match[1];
+	} else if (match = req.path.match(/\/employees\/([a-z-]+)$/)) {
+		req.session.parent = 'employees';
+		req.session.page = match[1];
 	} else {
 		return res.redirect('/');
 	}
-	view = `pages/${parent}${page ? '/' + page : ''}`;
+	req.session.view = `pages/${req.session.parent}${req.session.page ? '/' + req.session.page : ''}`;
 	if (process.env.DEBUG) {
-		console.log('Parent', parent);
-		console.log('Page', page);
-		console.log('View', view);
+		console.log('Parent', req.session.parent);
+		console.log('Page', req.session.page);
+		console.log('View', req.session.view);
 	}
-	const client = await createClient();
-	const renderData = await getRenderData(parent, page, client, pageData);
-	await client.end();
-	if (renderData.tenants && renderData.tenants.length === 1) {
-		return res.redirect(`/tenants/${renderData.tenants[0].tenantid}`);
-	}
-	res.render(view, renderData);
+	next();
 });
+
+app.get('/*', async (req, res) => {
+	const {parent, page, pageData} = req.session;
+	let {view} = req.session;
+	if (req.session.tenant) {
+		const renderData = {
+			parent,
+			page,
+			...getTemplateData(parent),
+			tenant: req.session.tenant
+		};
+		req.session.tenant = null;
+		res.render(view, renderData);
+	} else if (req.session.employee) {
+		const renderData = {
+			parent,
+			page,
+			...getTemplateData(parent),
+			employee: req.session.employee
+		};
+		req.session.employee = null;
+		res.render(view, renderData);
+	} else {
+		const client = await createClient();
+		const renderData = await getRenderData(parent, page, client, pageData);
+		await client.end();
+		if (page === 'search' && req.query.searchQuery) {
+			if (renderData.tenants && renderData.tenants.length === 1) {
+				req.session.tenant = renderData.tenants[0];
+				return res.redirect(`/tenants/${req.session.tenant.tenantid}`);
+			} else if (renderData.employees && renderData.employees.length === 1) {
+				req.session.employee = renderData.employees[0];
+				return res.redirect(`/employees/${req.session.employee.employeeid}`);
+			}
+		}
+		res.render(view, renderData);
+	}
+});
+
+const resetSession = session => {
+	session.parent = null;
+	session.page = null;
+	session.pageData = null;
+	session.view = null;
+};
 
 app.listen(app.get('port'), () => {
   	console.log('Node app is running on port', app.get('port'));
