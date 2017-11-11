@@ -15,7 +15,7 @@ html
                         )
                 div.control: button.button.is-link(type='submit') Submit
             hr
-            table.table.is-striped.is-hoverable
+            table#tenants-table.table.is-striped.is-hoverable
                 mixin columns
                     tr
                         th First Name
@@ -26,8 +26,8 @@ html
                     if tenants.length > 10
                         tfoot: +columns
                     tbody: for tenant in tenants
-                            tr(id=tenant.tenantid)
-                                td=tenant.first_name
-                                td=tenant.last_name
-                                td #{tenant.phone_number.substring(0,3)}-#{tenant.phone_number.substring(3,6)}-#{tenant.phone_number.substring(6)}
+                        tr(id=tenant.tenantid)
+                            td=tenant.first_name
+                            td=tenant.last_name
+                            td #{tenant.phone_number.substring(0,3)}-#{tenant.phone_number.substring(3,6)}-#{tenant.phone_number.substring(6)}
         include includes/foot

@@ -8,15 +8,15 @@ html
                 h2.subtitle Property Name (Placeholder)
                 div.card(style='padding:20px')
                     div
-                        strong Tenant Address:
+                        strong Address:
                         |
                         | #{tenant.street}, #{tenant.city}, #{tenant.state} #{tenant.zipcode}
                     div
-                        strong Tenant Phone Number:
+                        strong Phone Number:
                         |
                         | #{tenant.phone_number.substring(0,3)}-#{tenant.phone_number.substring(3,6)}-#{tenant.phone_number.substring(6)}
                     div
-                        strong Tenant Email:
+                        strong Email:
                         |
                         | #{tenant.email}
         include ../includes/foot

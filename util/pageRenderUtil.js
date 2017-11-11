@@ -7,7 +7,7 @@ const getRenderData = async (parent, page, client, pageData) => {
 		page,
 		...getTemplateData(parent)
 	};
-	const results = await getPageData(page ? page : parent, client, pageData);
+	const results = await getPageData(page ? `${parent}/${page}` : parent, client, pageData);
 	return {
 		...renderData,
 		...results
@@ -59,13 +59,22 @@ const getTemplateData = parent => {
 					name: 'Billing',
 					href: '/administration/billing',
 					page: 'billing'
-				}, {
-					name: 'Employees',
-					href: '/administration/employees',
-					page: 'employees'
-				}],
+				}]
 			};
 			break;
+		case 'employees':
+			return {
+				title: 'Employees',
+				subheadings: [{
+					name: 'Search',
+					href: '/employees/search',
+					page: 'search'
+				}, {
+					name: 'New Employee',
+					href: '/employees/new',
+					page: 'new'
+				}]
+			};
 		default:
 			return;
 	}
@@ -86,14 +95,24 @@ const pageDataSwitch = (client, pageData) => ({
 	'tenants': async () => {
 		return await sqlUtil.getTenants(client);
 	},
-	'tenant': async () => {
+	'tenants/tenant': async () => {
 		return await sqlUtil.getTenantByID(client, parseInt(pageData));
 	},
-	'search': async () => {
+	'tenants/search': async () => {
 		return await sqlUtil.searchTenants(client, pageData)
+	},
+	'employees': async () => {
+		return await sqlUtil.getEmployees(client);
+	},
+	'employees/employee': async () => {
+		return await sqlUtil.getEmployeeByID(client, parseInt(pageData));
+	},
+	'employees/search': async () => {
+		return await sqlUtil.searchEmployees(client, pageData)
 	}
 });
 
 module.exports = {
-	getRenderData
+	getRenderData,
+	getTemplateData
 };

@@ -1,5 +1,5 @@
 const tenantSearch = document.getElementById('tenant-search');
-const tenantsTable = document.querySelector('table.table');
+const tenantsTable = document.getElementById('tenants-table');
 const newTenant = document.getElementById('new-tenant');
 
 if (tenantSearch) {
@@ -13,7 +13,7 @@ if (tenantSearch) {
 if (tenantsTable) {
 	tenantsTable.addEventListener('click', ({target}) => {
 		if (target.tagName === 'TD') {
-			window.location.pathname = `/tenants/${target.parentNode.id}`
+			window.location.href = `/tenants/${target.parentNode.id}`;
 		}
 	});
 }
