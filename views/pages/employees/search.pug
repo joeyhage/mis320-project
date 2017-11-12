@@ -14,7 +14,7 @@ html
                     if employees.length > 10
                         tfoot: +columns
                     tbody: for employee in employees
-                        tr(id=employee.employeeid)
+                        tr(id=employee.personid)
                             td=employee.first_name
                             td=employee.last_name
                             td=employee.job_title

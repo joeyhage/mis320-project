@@ -14,7 +14,7 @@ html
                     if tenants.length > 10
                         tfoot: +columns
                     tbody: for tenant in tenants
-                        tr(id=tenant.tenantid)
+                        tr(id=tenant.personid)
                             td=tenant.first_name
                             td=tenant.last_name
                             td #{tenant.phone_number.substring(0,3)}-#{tenant.phone_number.substring(3,6)}-#{tenant.phone_number.substring(6)}

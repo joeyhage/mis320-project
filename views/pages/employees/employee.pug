@@ -5,12 +5,13 @@ html
         if (employee)
             div.container
                 h1.title.is-spaced #{employee.last_name}, #{employee.first_name}
-                h2.subtitle=employee.job_title
+                if employee.job_title
+                    h2.subtitle=employee.job_title
                 div.card(style='padding:20px')
                     div
                         strong Address:
                         |
-                        | #{employee.street}, #{employee.city}, #{employee.state} #{employee.zipcode}
+                        | #{employee.person_streetaddress}, #{employee.person_city}, #{employee.person_state} #{employee.person_zipcode}
                     div
                         strong Phone Number:
                         |

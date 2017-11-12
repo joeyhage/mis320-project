@@ -12,7 +12,7 @@ app.use(express.static(__dirname + '/public'));
 app.use('/css', express.static(__dirname + '/node_modules/bulma/css/'));
 app.use(bodyParser.json());
 app.use(session({
-	secret: 'hartley properties',
+	secret: process.env.SESSION_SECRET,
 	resave: false,
 	saveUninitialized: false,
 	cookie: {maxAge: 60000}
@@ -75,11 +75,6 @@ app.use((req, res, next) => {
 		return res.redirect('/');
 	}
 	req.session.view = `pages/${req.session.parent}${req.session.page ? '/' + req.session.page : ''}`;
-	if (process.env.DEBUG) {
-		console.log('Parent', req.session.parent);
-		console.log('Page', req.session.page);
-		console.log('View', req.session.view);
-	}
 	next();
 });
 
@@ -94,6 +89,9 @@ app.get('/*', async (req, res) => {
 			tenant: req.session.tenant
 		};
 		req.session.tenant = null;
+		if (process.env.DEBUG) {
+			console.dir(renderData);
+		}
 		res.render(view, renderData);
 	} else if (req.session.employee) {
 		const renderData = {
@@ -103,6 +101,9 @@ app.get('/*', async (req, res) => {
 			employee: req.session.employee
 		};
 		req.session.employee = null;
+		if (process.env.DEBUG) {
+			console.dir(renderData);
+		}
 		res.render(view, renderData);
 	} else {
 		const client = await createClient();
@@ -116,6 +117,9 @@ app.get('/*', async (req, res) => {
 				req.session.employee = renderData.employees[0];
 				return res.redirect(`/employees/${req.session.employee.employeeid}`);
 			}
+		}
+		if (process.env.DEBUG) {
+			console.dir(renderData);
 		}
 		res.render(view, renderData);
 	}
