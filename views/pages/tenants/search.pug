@@ -2,13 +2,26 @@ html
     include ../includes/head
     body
         include ../includes/navigation
-        div.container
+        div.container.column.is-8-desktop.is-offset-2-desktop
+            form#tenant-search(action='/tenants/search' method='get')
+                label.label Tenant Search
+                div.field.has-addons
+                    div.control.is-expanded
+                        input.input(
+                            type='text'
+                            name='searchQuery'
+                            placeholder='First Name, Last Name, Phone #, or Email'
+                            autofocus
+                        )
+                    div.control: button.button.is-link.is-outlined(type='submit') Submit
+            hr
             table#tenants-table.table.is-striped.is-hoverable
                 mixin columns
                     tr
                         th First Name
                         th Last Name
                         th Phone Number
+                        th Email
                 thead: +columns
                 if tenants
                     if tenants.length > 10
@@ -18,4 +31,5 @@ html
                             td=tenant.first_name
                             td=tenant.last_name
                             td #{tenant.phone_number.substring(0,3)}-#{tenant.phone_number.substring(3,6)}-#{tenant.phone_number.substring(6)}
+                            td=tenant.email
         include ../includes/foot

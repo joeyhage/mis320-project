@@ -2,7 +2,19 @@ html
     include ../includes/head
     body
         include ../includes/navigation
-        div.container
+        div.container.column.is-8-desktop.is-offset-2-desktop
+            form#employee-search(action='/employees/search' method='get')
+                label.label Employee Search
+                div.field.has-addons
+                    div.control.is-expanded
+                        input.input(
+                            type='text'
+                            name='searchQuery'
+                            placeholder='First Name, Last Name, or Job Title'
+                            autofocus
+                        )
+                    div.control: button.button.is-link.is-outlined(type='submit') Submit
+            hr
             table#employees-table.table.is-striped.is-hoverable
                 mixin columns
                     tr

@@ -8,16 +8,19 @@ html
                 if employee.job_title
                     h2.subtitle=employee.job_title
                 div.card(style='padding:20px')
-                    div
-                        strong Address:
-                        |
-                        | #{employee.person_streetaddress}, #{employee.person_city}, #{employee.person_state} #{employee.person_zipcode}
-                    div
-                        strong Phone Number:
-                        |
-                        | #{employee.phone_number.substring(0,3)}-#{employee.phone_number.substring(3,6)}-#{employee.phone_number.substring(6)}
-                    div
-                        strong Email:
-                        |
-                        | #{employee.email}
+                    if employee.address
+                        div
+                            strong Address:
+                            |
+                            | #{employee.person_streetaddress}, #{employee.person_city}, #{employee.person_state} #{employee.person_zipcode}
+                    if employee.phone_number
+                        div
+                            strong Phone Number:
+                            |
+                            | #{employee.phone_number.substring(0,3)}-#{employee.phone_number.substring(3,6)}-#{employee.phone_number.substring(6)}
+                    if employee.email
+                        div
+                            strong Email:
+                            |
+                            | #{employee.email}
         include ../includes/foot

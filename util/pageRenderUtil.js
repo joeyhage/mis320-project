@@ -34,17 +34,31 @@ const getTemplateData = parent => {
 				}]
 			};
 			break;
+		case 'employees':
+			return {
+				title: 'Employees',
+				subheadings: [{
+					name: 'Search',
+					href: '/employees/search',
+					page: 'search'
+				}, {
+					name: 'New Employee',
+					href: '/employees/new',
+					page: 'new'
+				}]
+			};
+			break;
 		case 'maintenance':
 			return {
 				title: 'Maintenance',
 				subheadings: [{
-					name: 'Work Orders',
-					href: '/maintenance/work-orders',
-					page: 'work-orders'
+					name: 'Requests',
+					href: '/maintenance/requests',
+					page: 'requests'
 				}, {
-					name: 'Purchase Orders',
-					href: '/maintenance/purchase-orders',
-					page: 'purchase-orders'
+					name: 'Orders',
+					href: '/maintenance/orders',
+					page: 'orders'
 				}, {
 					name: 'Vendors',
 					href: '/maintenance/vendors',
@@ -62,19 +76,6 @@ const getTemplateData = parent => {
 				}]
 			};
 			break;
-		case 'employees':
-			return {
-				title: 'Employees',
-				subheadings: [{
-					name: 'Search',
-					href: '/employees/search',
-					page: 'search'
-				}, {
-					name: 'New Employee',
-					href: '/employees/new',
-					page: 'new'
-				}]
-			};
 		default:
 			return;
 	}
