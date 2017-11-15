@@ -21,66 +21,69 @@ app.use(session({
 app.use((req, res, next) => {
 	resetSession(req.session);
 	let match;
-	if (/\/$/.test(req.path)) {
+	if (/^(\/)?$/.test(req.path)) {
 		req.session.parent = 'dashboard';
-	} else if (/\/tenants$/.test(req.path)) {
+	} else if (/^\/tenants(\/)?$/.test(req.path)) {
 		req.session.parent = 'tenants';
-	} else if (/\/tenants\/search/.test(req.path)) {
+	} else if (/^\/tenants\/search(\/)?$/.test(req.path)) {
 		req.session.parent = 'tenants';
 		req.session.page = 'search';
 		const searchQuery = req.query.searchQuery;
 		if (searchQuery) {
 			req.session.tenantSearch = searchQuery;
 		} else if (!req.session.tenantSearch) {
-			return res.redirect('/tenants');
+			req.session.redirectUrl = '/tenants';
+			return next();
 		}
 		req.session.pageData = req.session.tenantSearch;
-	} else if (match = req.path.match(/\/tenants\/([0-9]+)$/)) {
+	} else if (match = req.path.match(/^\/tenants\/([0-9]+)(\/)?$/)) {
 		req.session.parent = 'tenants';
 		req.session.page = 'tenant';
 		req.session.pageData = match[1];
-	} else if (match = req.path.match(/\/tenants\/([a-z-]+)$/)) {
+	} else if (match = req.path.match(/^\/tenants\/([a-z-]+)(\/)?$/)) {
 		req.session.parent = 'tenants';
 		req.session.page = match[1];
-	} else if (/\/maintenance$/.test(req.path)) {
-		req.session.parent = 'maintenance';
-	} else if (match = req.path.match(/\/maintenance\/([a-z-]+)$/)) {
-		req.session.parent = 'maintenance';
-		req.session.page = match[1];
-	} else if (/\/administration$/.test(req.path)) {
-		req.session.parent = 'administration';
-	} else if (match = req.path.match(/\/administration\/([a-z-]+)$/)) {
-		req.session.parent = 'administration';
-		req.session.page = match[1];
-	} else if (/\/employees$/.test(req.path)) {
+	} else if (/^\/employees(\/)?$/.test(req.path)) {
 		req.session.parent = 'employees';
-	} else if (/\/employees\/search/.test(req.path)) {
+	} else if (/^\/employees\/search(\/)?/.test(req.path)) {
 		req.session.parent = 'employees';
 		req.session.page = 'search';
 		const searchQuery = req.query.searchQuery;
 		if (searchQuery) {
 			req.session.employeeSearch = searchQuery;
 		} else if (!req.session.employeeSearch) {
-			return res.redirect('/employees');
+			req.session.redirectUrl = '/employees';
+			return next();
 		}
 		req.session.pageData = req.session.employeeSearch;
-	} else if (match = req.path.match(/\/employees\/([0-9]+)$/)) {
+	} else if (match = req.path.match(/^\/employees\/([0-9]+)(\/)?$/)) {
 		req.session.parent = 'employees';
 		req.session.page = 'employee';
 		req.session.pageData = match[1];
-	} else if (match = req.path.match(/\/employees\/([a-z-]+)$/)) {
+	} else if (match = req.path.match(/^\/employees\/([a-z-]+)(\/)?$/)) {
 		req.session.parent = 'employees';
 		req.session.page = match[1];
+	} else if (/^\/maintenance(\/)?$/.test(req.path)) {
+		req.session.parent = 'maintenance';
+	} else if (match = req.path.match(/^\/maintenance\/([a-z-]+)(\/)?$/)) {
+		req.session.parent = 'maintenance';
+		req.session.page = match[1];
+	} else if (/^\/administration(\/)?$/.test(req.path)) {
+		req.session.parent = 'administration';
+	} else if (match = req.path.match(/^\/administration\/([a-z-]+)(\/)?$/)) {
+		req.session.parent = 'administration';
+		req.session.page = match[1];
 	} else {
-		req.session.homeRedirect = true;
+		req.session.redirectUrl = '/';
+		return next();
 	}
 	req.session.view = `pages/${req.session.parent}${req.session.page ? '/' + req.session.page : ''}`;
 	next();
 });
 
 app.get('/*', async (req, res) => {
-	if (req.session.homeRedirect) {
-		return res.redirect('/');
+	if (req.session.redirectUrl) {
+		return res.redirect(req.session.redirectUrl);
 	}
 	const {parent, page, pageData} = req.session;
 	let {view} = req.session;
@@ -133,7 +136,7 @@ const resetSession = session => {
 	session.page = null;
 	session.pageData = null;
 	session.view = null;
-	session.homeRedirect = null;
+	session.redirectUrl = null;
 };
 
 app.listen(app.get('port'), () => {
