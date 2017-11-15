@@ -72,13 +72,16 @@ app.use((req, res, next) => {
 		req.session.parent = 'employees';
 		req.session.page = match[1];
 	} else {
-		return res.redirect('/');
+		req.session.homeRedirect = true;
 	}
 	req.session.view = `pages/${req.session.parent}${req.session.page ? '/' + req.session.page : ''}`;
 	next();
 });
 
 app.get('/*', async (req, res) => {
+	if (req.session.homeRedirect) {
+		return res.redirect('/');
+	}
 	const {parent, page, pageData} = req.session;
 	let {view} = req.session;
 	if (req.session.tenant) {
@@ -130,6 +133,7 @@ const resetSession = session => {
 	session.page = null;
 	session.pageData = null;
 	session.view = null;
+	session.homeRedirect = null;
 };
 
 app.listen(app.get('port'), () => {
