@@ -64,7 +64,7 @@ const searchEmployees = async (client, searchQuery) => {
 		'lower(first_name) like $1 or lower(last_name) like $1 or job_title like $1 ' +
 		'or lower(first_name || \' \' || last_name) like $1)' +
 		'order by personid desc',
-		[formattedSearchQuery]
+		[`%${formattedSearchQuery}%`]
 	);
 	return {employees: results.rows};
 };

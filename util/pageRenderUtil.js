@@ -121,7 +121,7 @@ const pageDataSwitch = (client, pageData) => ({
 		return await sqlUtil.getEmployeeByID(client, parseInt(pageData));
 	},
 	'employees/search': async () => {
-		return await sqlUtil.searchEmployees(client, pageData);
+		return await sqlUtil.searchEmployees(client, pageData.search);
 	}
 });
 

@@ -7,7 +7,6 @@ const tenantsQuery = (search, property, leaseStatus) => {
 		'from lease l, unit u, property p ' +
 		'where l.unitid=u.unitid and u.propertyid=p.propertyid and lease_status=\'Active\') ' +
 		'lease on t.tenantid=lease.tenantid';
-	const propertyQuery = getPropertyQuery(property);
 
 	let query = selectFrom + (leaseStatus && leaseStatus !== 'Active' ? where : allTenants + where);
 	const params = [];

@@ -63,7 +63,9 @@ app.use((req, res, next) => {
 			req.session.redirectUrl = '/employees';
 			return next();
 		}
-		req.session.pageData = req.session.employeeSearch;
+		req.session.pageData = {
+			search: req.session.employeeSearch
+		};
 	} else if (match = req.path.match(/^\/employees\/([0-9]+)(\/)?$/)) {
 		req.session.parent = 'employees';
 		req.session.page = 'employee';
