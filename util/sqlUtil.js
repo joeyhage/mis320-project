@@ -1,3 +1,5 @@
+const queryBuilder = require('./queryBuilder');
+
 const { Client } = require('pg');
 
 const createClient = async () => {
@@ -10,9 +12,8 @@ const createClient = async () => {
 };
 
 const getTenants = async client => {
-	const results = await client.query(
-		'select * from person, tenant where personid=tenantid order by personid desc limit 10'
-	);
+	const tenantsQuery = queryBuilder.tenantsQuery();
+	const results = await client.query(tenantsQuery.query);
 	return {tenants: results.rows};
 };
 
@@ -24,21 +25,23 @@ const getTenantByID = async (client, tenantID) => {
 	return {tenant: results.rows[0]};
 };
 
-const searchTenants = async (client, searchQuery) => {
-	const formattedSearchQuery = formatSearchQuery(searchQuery);
-	const results = await client.query(
-		'select * from person, tenant where personid=tenantid and (' +
-		'lower(first_name) like $1 or lower(last_name) like $1 or phone_number like $1 or lower(email) like $1 ' +
-		'or lower(first_name || \' \' || last_name) like $1) limit 20',
-		[formattedSearchQuery]
-	);
+const searchTenants = async (client, {search, property, leaseStatus}) => {
+	const formattedSearchQuery = formatSearchQuery(search);
+	const tenantsQuery = queryBuilder.tenantsQuery(formattedSearchQuery, property, leaseStatus);
+	const results = await client.query(tenantsQuery.query, tenantsQuery.params);
+	if (process.env.DEBUG) {
+		console.log('sqlUtil - searchTenants');
+		console.dir(results.rows);
+	}
 	return {tenants: results.rows};
 };
 
 const getEmployees = async client => {
 	const results = await client.query(
-		'select * from person, employee e left outer join job j on j.employeeid=e.employeeid where personid=e.employeeid ' +
-		'and job_end_date is null order by personid desc limit 10'
+		'select * from person, employee e ' +
+		'left outer join job j on j.employeeid=e.employeeid ' +
+		'where personid=e.employeeid and job_end_date is null ' +
+		'order by personid desc'
 	);
 	return {employees: results.rows};
 };
@@ -55,26 +58,35 @@ const getEmployeeByID = async (client, employeeID) => {
 const searchEmployees = async (client, searchQuery) => {
 	const formattedSearchQuery = formatSearchQuery(searchQuery);
 	const results = await client.query(
-		'select * from person, employee e left outer join job j on j.employeeid=e.employeeid ' +
+		'select * from person, employee e ' +
+		'left outer join job j on j.employeeid=e.employeeid ' +
 		'where personid=e.employeeid and job_end_date is null and (' +
 		'lower(first_name) like $1 or lower(last_name) like $1 or job_title like $1 ' +
-		'or lower(first_name || \' \' || last_name) like $1) limit 20',
+		'or lower(first_name || \' \' || last_name) like $1)' +
+		'order by personid desc',
 		[formattedSearchQuery]
 	);
 	return {employees: results.rows};
 };
 
-const formatSearchQuery = searchQuery => {
-	let formatted = searchQuery.toLowerCase();
-	if (/[0-9]{3}(.?)[0-9]{3}.?[0-9]{4}/.test(searchQuery)) {
-		formatted = formatPhoneNumberQuery(formatted);
-	}
-	return `%${formatted}%`;
+const getPropertyNames = async client => {
+	const results = await client.query(
+		'select property_name from property'
+	);
+	return {properties: results.rows};
 };
 
-const formatPhoneNumberQuery = searchQuery => {
-	const match = searchQuery.match(/[0-9]{3}(.?)[0-9]{3}.?[0-9]{4}/)[1];
-	return searchQuery.split(match).join('');
+const formatSearchQuery = search => {
+	let formatted = search.toLowerCase();
+	if (/[0-9]{3}(.?)[0-9]{3}.?[0-9]{4}/.test(search)) {
+		formatted = formatPhoneNumberQuery(formatted);
+	}
+	return formatted;
+};
+
+const formatPhoneNumberQuery = search => {
+	const match = search.match(/[0-9]{3}(.?)[0-9]{3}.?[0-9]{4}/)[1];
+	return search.split(match).join('');
 };
 
 module.exports = {
@@ -84,5 +96,6 @@ module.exports = {
 	searchTenants,
 	getEmployees,
 	getEmployeeByID,
-	searchEmployees
+	searchEmployees,
+	getPropertyNames
 };

@@ -4,8 +4,11 @@ const newTenant = document.getElementById('new-tenant');
 
 if (tenantSearch) {
 	tenantSearch.addEventListener('submit', event => {
-		const searchQuery = event.target.elements.namedItem('searchQuery').value;
-		if (!searchQuery || searchQuery.includes('(') || searchQuery.includes(')')) {
+		const elements = event.target.elements;
+		const search = elements.namedItem('search').value;
+		const property = elements.namedItem('property').value;
+		const leaseStatus = elements.namedItem('leaseStatus').value;
+		if ((!search && !property && !leaseStatus) || search.includes('(') || search.includes(')')) {
 			event.preventDefault();
 		}
 	});

@@ -25,17 +25,25 @@ app.use((req, res, next) => {
 		req.session.parent = 'dashboard';
 	} else if (/^\/tenants(\/)?$/.test(req.path)) {
 		req.session.parent = 'tenants';
-	} else if (/^\/tenants\/search(\/)?$/.test(req.path)) {
+	} else if (/^\/tenants\/search/.test(req.path)) {
 		req.session.parent = 'tenants';
 		req.session.page = 'search';
-		const searchQuery = req.query.searchQuery;
-		if (searchQuery) {
-			req.session.tenantSearch = searchQuery;
-		} else if (!req.session.tenantSearch) {
+		const search = req.query.search;
+		const property = req.query.property;
+		const leaseStatus = req.query.leaseStatus;
+		if (search || property || leaseStatus) {
+			req.session.tenantSearch = search;
+			req.session.property = property;
+			req.session.leaseStatus = leaseStatus;
+		} else if (!req.session.tenantSearch && !req.session.property && !req.session.leaseStatus) {
 			req.session.redirectUrl = '/tenants';
 			return next();
 		}
-		req.session.pageData = req.session.tenantSearch;
+		req.session.pageData = {
+			search: req.session.tenantSearch,
+			property: req.session.property,
+			leaseStatus: req.session.leaseStatus
+		};
 	} else if (match = req.path.match(/^\/tenants\/([0-9]+)(\/)?$/)) {
 		req.session.parent = 'tenants';
 		req.session.page = 'tenant';
@@ -45,12 +53,12 @@ app.use((req, res, next) => {
 		req.session.page = match[1];
 	} else if (/^\/employees(\/)?$/.test(req.path)) {
 		req.session.parent = 'employees';
-	} else if (/^\/employees\/search(\/)?/.test(req.path)) {
+	} else if (/^\/employees\/search/.test(req.path)) {
 		req.session.parent = 'employees';
 		req.session.page = 'search';
-		const searchQuery = req.query.searchQuery;
-		if (searchQuery) {
-			req.session.employeeSearch = searchQuery;
+		const search = req.query.search;
+		if (search) {
+			req.session.employeeSearch = search;
 		} else if (!req.session.employeeSearch) {
 			req.session.redirectUrl = '/employees';
 			return next();
@@ -87,48 +95,20 @@ app.get('/*', async (req, res) => {
 	}
 	const {parent, page, pageData} = req.session;
 	let {view} = req.session;
-	if (req.session.tenant) {
-		const renderData = {
-			parent,
-			page,
-			...getTemplateData(parent),
-			tenant: req.session.tenant
-		};
-		req.session.tenant = null;
-		if (process.env.DEBUG) {
-			console.dir(renderData);
+	const client = await createClient();
+	const renderData = await getRenderData(parent, page, client, pageData);
+	await client.end();
+	if (page === 'search' && (req.query.search || req.query.property || req.query.leaseStatus)) {
+		if (renderData.tenants && renderData.tenants.length === 1) {
+			return res.redirect(`/tenants/${renderData.tenants[0].tenantid}`);
+		} else if (renderData.employees && renderData.employees.length === 1) {
+			return res.redirect(`/employees/${renderData.employees[0].employeeid}`);
 		}
-		res.render(view, renderData);
-	} else if (req.session.employee) {
-		const renderData = {
-			parent,
-			page,
-			...getTemplateData(parent),
-			employee: req.session.employee
-		};
-		req.session.employee = null;
-		if (process.env.DEBUG) {
-			console.dir(renderData);
-		}
-		res.render(view, renderData);
-	} else {
-		const client = await createClient();
-		const renderData = await getRenderData(parent, page, client, pageData);
-		await client.end();
-		if (page === 'search' && req.query.searchQuery) {
-			if (renderData.tenants && renderData.tenants.length === 1) {
-				req.session.tenant = renderData.tenants[0];
-				return res.redirect(`/tenants/${req.session.tenant.tenantid}`);
-			} else if (renderData.employees && renderData.employees.length === 1) {
-				req.session.employee = renderData.employees[0];
-				return res.redirect(`/employees/${req.session.employee.employeeid}`);
-			}
-		}
-		if (process.env.DEBUG) {
-			console.dir(renderData);
-		}
-		res.render(view, renderData);
 	}
+	if (process.env.DEBUG) {
+		console.dir(renderData);
+	}
+	res.render(view, renderData);
 });
 
 const resetSession = session => {
