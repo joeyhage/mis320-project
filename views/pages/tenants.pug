@@ -23,27 +23,27 @@ html
                                     for property in properties
                                         option(value=property.property_name)=property.property_name
                     div.field.is-horizontal
-                        div.field-label: label.label Lease Status
+                        div.field-label: label.label Tenant Status
                         div.field-body: div.field: div.control
                             label.radio
-                                input(type='radio' name='leaseStatus' value='' checked)
+                                input(type='radio' name='tenantStatus' value='' checked)
                                 |
                                 | Any
                             label.radio
-                                input(type='radio' name='leaseStatus' value='Pending')
+                                input(type='radio' name='tenantStatus' value='Applied')
                                 |
-                                | Pending
+                                | Applied
                             label.radio
-                                input(type='radio' name='leaseStatus' value='Active')
+                                input(type='radio' name='tenantStatus' value='Current')
                                 |
-                                | Active
+                                | Current
                             label.radio
-                                input(type='radio' name='leaseStatus' value='Complete')
+                                input(type='radio' name='tenantStatus' value='Complete')
                                 |
                                 | Complete
                     div.field.is-horizontal
-                        div.field-label
-                        div.field-body: div.field: div.control: button.button.is-link.is-outlined(type='submit') Submit
+                        div.field-label.is-normal
+                        div.field-body: div.field: div.control: button.button.is-link.is-outlined(type='submit') Search
             div.column.is-10-desktop.is-offset-1-desktop
                 hr
                 table#tenants-table.table.is-striped.is-hoverable
@@ -53,7 +53,7 @@ html
                             th Last Name
                             th Unit Number
                             th Property Name
-                            th Lease Status
+                            th Tenant Status
                     thead: +columns
                     if tenants
                         if tenants.length > 10
@@ -64,5 +64,5 @@ html
                                 td=tenant.last_name
                                 td=tenant.unit_number
                                 td=tenant.property_name
-                                td=tenant.lease_status
+                                td=tenant.tenant_status
         include includes/foot

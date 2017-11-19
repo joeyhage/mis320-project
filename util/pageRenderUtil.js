@@ -1,14 +1,21 @@
 const tenants = require('../exampleData/tenant.json');
 const sqlUtil = require('./sqlUtil');
 
-const getRenderData = async (parent, page, client, pageData) => {
-	const results = await getPageData(page ? `${parent}/${page}` : parent, client, pageData);
-	return {
+const getRenderData = async (parent, page, pageData, client) => {
+	const renderData = {
 		parent,
 		page,
 		pageData,
 		...getTemplateData(parent),
-		...results
+	};
+	if (client) {
+		const results = await getPageData(page ? `${parent}/${page}` : parent, client, pageData);
+		return {
+			...renderData,
+			...results
+		};
+	} else {
+		return renderData;
 	}
 };
 const getTemplateData = parent => {
@@ -126,6 +133,5 @@ const pageDataSwitch = (client, pageData) => ({
 });
 
 module.exports = {
-	getRenderData,
-	getTemplateData
+	getRenderData
 };

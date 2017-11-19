@@ -2,28 +2,128 @@ html
     include ../includes/head
     body
         include ../includes/navigation
-        div.container: form#new-employee
-            div.columns
-                div.column
-                    div.field
-                        label.label First Name
-                        div.control: input.input(type='text')
-                div.column
-                    div.field
-                        label.label Last Name
-                        div.control: input.input(type='text')
-            div.columns
-                div.column
-                    div.field
-                        label.label Phone Number
-                        div.control: input.input(type='tel')
-                div.column
-                    div.field
-                        label.label Email Address
-                        div.control: input.input(type='email')
-            div.columns: div.column
-                div.field
-                    label.label Address
-                    div.control: input.input(type='text')
-            div.control: button.button.is-link(type='submit') Submit
+        div.container: form#new-employee(action='/employees/new' method='post')
+            div.column.is-8-desktop.is-offset-1-desktop
+                div.field.is-horizontal.margin-bottom
+                    div.field-label: label.label Name
+                    div.field-body
+                        div.field: div.control.is-expanded: input.input(type='text' placeholder='First Name' name='firstName')
+                        div.field: div.control.is-expanded: input.input(type='text' placeholder='Last Name' name='lastName')
+                div.field.is-horizontal.margin-bottom
+                    div.field-label: label.label Phone Number
+                    div.field-body
+                        div.field.has-addons
+                            div.control.has-icons-left
+                                input.input(type='text' maxlength='3' size='4' name='phone1')
+                                span.icon.is-small.is-left
+                                    i.fa.fa-phone
+                            div.control: span.button.is-static -
+                            div.control: input.input(type='text' maxlength='3' size='4' name='phone2')
+                            div.control: span.button.is-static -
+                            div.control: input.input(type='text' maxlength='4' size='5' name='phone3')
+                div.field.is-horizontal.margin-bottom
+                    div.field-label: label.label Email
+                    div.field-body: div.field: div.control.is-expanded.has-icons-left
+                        input.input(type='email' name='email')
+                        span.icon.is-small.is-left
+                            i.fa.fa-envelope
+                div.field.is-horizontal
+                    div.field-label: label.label Address
+                    div.field-body
+                        div.field: div.control.is-expanded
+                            input.input(type='text' name='streetAddress' placeholder='Number & Street')
+                        div.field: div.control.is-expanded
+                            input.input(type='text' name='city' placeholder='City')
+                div.field.is-horizontal.margin-bottom
+                    div.field-label
+                    div.field-body
+                        div.field: div.control.is-expanded
+                            div.select.is-fullwidth
+                                select(name='state')
+                                    option(value='' selected disabled) Select a state...
+                                    option(value='AL') Alabama
+                                    option(value='AK') Alaska
+                                    option(value='AZ') Arizona
+                                    option(value='AR') Arkansas
+                                    option(value='CA') California
+                                    option(value='CO') Colorado
+                                    option(value='CT') Connecticut
+                                    option(value='DE') Delaware
+                                    option(value='DC') District Of Columbia
+                                    option(value='FL') Florida
+                                    option(value='GA') Georgia
+                                    option(value='HI') Hawaii
+                                    option(value='ID') Idaho
+                                    option(value='IL') Illinois
+                                    option(value='IN') Indiana
+                                    option(value='IA') Iowa
+                                    option(value='KS') Kansas
+                                    option(value='KY') Kentucky
+                                    option(value='LA') Louisiana
+                                    option(value='ME') Maine
+                                    option(value='MD') Maryland
+                                    option(value='MA') Massachusetts
+                                    option(value='MI') Michigan
+                                    option(value='MN') Minnesota
+                                    option(value='MS') Mississippi
+                                    option(value='MO') Missouri
+                                    option(value='MT') Montana
+                                    option(value='NE') Nebraska
+                                    option(value='NV') Nevada
+                                    option(value='NH') New Hampshire
+                                    option(value='NJ') New Jersey
+                                    option(value='NM') New Mexico
+                                    option(value='NY') New York
+                                    option(value='NC') North Carolina
+                                    option(value='ND') North Dakota
+                                    option(value='OH') Ohio
+                                    option(value='OK') Oklahoma
+                                    option(value='OR') Oregon
+                                    option(value='PA') Pennsylvania
+                                    option(value='RI') Rhode Island
+                                    option(value='SC') South Carolina
+                                    option(value='SD') South Dakota
+                                    option(value='TN') Tennessee
+                                    option(value='TX') Texas
+                                    option(value='UT') Utah
+                                    option(value='VT') Vermont
+                                    option(value='VA') Virginia
+                                    option(value='WA') Washington
+                                    option(value='WV') West Virginia
+                                    option(value='WI') Wisconsin
+                                    option(value='WY') Wyoming
+                        div.field: div.control
+                            input.input(type='text' name='zipcode' placeholder='Zipcode' maxlength='5' minlength='5' size='5')
+                div.field.is-horizontal.margin-bottom
+                    div.field-label: label.label Date of Birth
+                    div.field-body
+                        div.field.is-narrow
+                            div.control.has-icons-left
+                                input.input(type='date' name='dob')
+                                span.icon.is-small.is-left
+                                    i.fa.fa-calendar
+                div.field.is-horizontal.margin-bottom
+                    div.field-label: label.label SSN
+                    div.field-body
+                        div.field.has-addons
+                            div.control.has-icons-left
+                                input.input(type='password' name='ssn1' maxlength='3' minlength='3' size='4')
+                                span.icon.is-small.is-left
+                                    i.fa.fa-lock
+                            div.control: span.button.is-static -
+                            div.control: input.input(type='password' name='ssn2' maxlength='2' minlength='2' size='3')
+                            div.control: span.button.is-static -
+                            div.control: input.input(type='password' name='ssn3' maxlength='4' minlength='4' size='5')
+                hr
+                div.field.is-horizontal.margin-bottom
+                    div.field-label: label.label Date of Hire
+                    div.field-body
+                        div.field.is-narrow
+                            div.control.has-icons-left
+                                input.input(type='date' name='dateOfHire')
+                                span.icon.is-small.is-left
+                                    i.fa.fa-calendar
+                div.field.is-horizontal
+                    div.field-label
+                    div.field-body: div.field: div.control: button.button.is-link.is-outlined(type='submit') Create Employee
         include ../includes/foot

@@ -15,3 +15,6 @@
 div.navbar-menu a.navbar-item.is-active {
     background-color: #cfd4df !important;
 }
+.field.is-horizontal.margin-bottom {
+    margin-bottom: 1.5rem;
+}

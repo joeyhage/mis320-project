@@ -7,8 +7,8 @@ if (tenantSearch) {
 		const elements = event.target.elements;
 		const search = elements.namedItem('search').value;
 		const property = elements.namedItem('property').value;
-		const leaseStatus = elements.namedItem('leaseStatus').value;
-		if ((!search && !property && !leaseStatus) || search.includes('(') || search.includes(')')) {
+		const tenantStatus = elements.namedItem('tenantStatus').value;
+		if ((!search && !property && !tenantStatus) || search.includes('(') || search.includes(')')) {
 			event.preventDefault();
 		}
 	});
@@ -22,7 +22,11 @@ if (tenantsTable) {
 }
 if (newTenant) {
 	newTenant.addEventListener('submit', event => {
-		event.preventDefault();
-		const formElements = event.target.elements;
+		const elements = event.target.elements;
+		for (const element of elements) {
+			if (!element.value && !element.classList.contains('button')) {
+				return event.preventDefault();
+			}
+		}
 	});
 }

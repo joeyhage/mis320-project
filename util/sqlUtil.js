@@ -14,6 +14,7 @@ const createClient = async () => {
 const getTenants = async client => {
 	const tenantsQuery = queryBuilder.tenantsQuery();
 	const results = await client.query(tenantsQuery.query);
+	setTenantStatus(results);
 	return {tenants: results.rows};
 };
 
@@ -25,10 +26,11 @@ const getTenantByID = async (client, tenantID) => {
 	return {tenant: results.rows[0]};
 };
 
-const searchTenants = async (client, {search, property, leaseStatus}) => {
+const searchTenants = async (client, {search, property, tenantStatus}) => {
 	const formattedSearchQuery = formatSearchQuery(search);
-	const tenantsQuery = queryBuilder.tenantsQuery(formattedSearchQuery, property, leaseStatus);
+	const tenantsQuery = queryBuilder.tenantsQuery(formattedSearchQuery, property, tenantStatus);
 	const results = await client.query(tenantsQuery.query, tenantsQuery.params);
+	setTenantStatus(results);
 	if (process.env.DEBUG) {
 		console.log('sqlUtil - searchTenants');
 		console.dir(results.rows);
@@ -76,6 +78,47 @@ const getPropertyNames = async client => {
 	return {properties: results.rows};
 };
 
+const createPerson = async (person, client, isTenant, isEmployee) => {
+	return await client.query(
+		'insert into person values (default,$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) returning *',
+		[person.firstName, person.lastName, person.phone1 + person.phone2 + person.phone3,
+			person.dob, person.ssn1 + person.ssn2 + person.ssn3, person.email,
+			person.streetAddress, person.city, person.state, person.zipcode, isTenant, isEmployee]
+	);
+};
+
+const createTenant = async tenant => {
+	const client = await createClient();
+	const personResult = await createPerson(tenant, client, true, false);
+	const person = personResult.rows[0];
+	const tenantResult = await client.query(
+		'insert into tenant values ($1,$2) returning *',
+		[person.personid, tenant.annualIncome]
+	);
+	await client.end();
+
+	return {
+		...person,
+		...tenantResult.rows[0]
+	};
+};
+
+const createEmployee = async employee => {
+	const client = await createClient();
+	const personResult = await createPerson(employee, client, false, true);
+	const person = personResult.rows[0];
+	const employeeResult = await client.query(
+		'insert into employee values ($1,$2) returning *',
+		[person.personid, employee.dateOfHire]
+	);
+	await client.end();
+
+	return {
+		...person,
+		...employeeResult.rows[0]
+	};
+};
+
 const formatSearchQuery = search => {
 	let formatted = search.toLowerCase();
 	if (/[0-9]{3}(.?)[0-9]{3}.?[0-9]{4}/.test(search)) {
@@ -89,6 +132,19 @@ const formatPhoneNumberQuery = search => {
 	return search.split(match).join('');
 };
 
+const setTenantStatus = results => {
+	for (const tenant of results.rows) {
+		tenant.tenant_status = determineTenantStatus(tenant.lease_status);
+	}
+};
+
+const determineTenantStatus = leaseStatus => {
+	if (leaseStatus === 'Active') return 'Current';
+	if (leaseStatus === 'Complete') return 'Past';
+	if (leaseStatus === 'Pending') return 'Applied';
+	return '';
+};
+
 module.exports = {
 	createClient,
 	getTenants,
@@ -97,5 +153,7 @@ module.exports = {
 	getEmployees,
 	getEmployeeByID,
 	searchEmployees,
-	getPropertyNames
+	getPropertyNames,
+	createTenant,
+	createEmployee
 };

@@ -8,20 +8,17 @@ document.addEventListener('DOMContentLoaded', () => {
 	}
 });
 
-const postFormData = (formElement, url, reqListener) => {
-	const xhr = new XMLHttpRequest();
-	xhr.onload = () => {
-		reqListener(xhr.responseText);
-	};
-	xhr.open('POST', url, true);
-	xhr.setRequestHeader('Content-Type', 'application/json');
-	xhr.send(stringifyFormAsJSON(new FormData(formElement)));
-};
-
-const stringifyFormAsJSON = formData => {
-	const json = {};
-	for (const pair of formData.entries()) {
-		json[pair[0]] = pair[1];
+const form = document.querySelector('form');
+if (form) {
+	const nodeList = form.querySelectorAll('input[type="date"]');
+	for (const node of nodeList) {
+		node.addEventListener('change', ({target}) => {
+			const value = target.value;
+			const split = value.split('-');
+			if (split[0].length > 4) {
+				split[0] = split[0].substring(0,4);
+				target.value = split.join('-');
+			}
+		});
 	}
-	return JSON.stringify(json);
-};
+}

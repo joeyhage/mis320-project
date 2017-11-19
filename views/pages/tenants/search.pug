@@ -27,27 +27,27 @@ html
                                             selected=property.property_name === pageData.property
                                         )=property.property_name
                     div.field.is-horizontal
-                        div.field-label: label.label Lease Status
+                        div.field-label: label.labelTenant Status
                         div.field-body: div.field: div.control
                             label.radio
-                                input(type='radio' name='leaseStatus' value='' checked='' === pageData.leaseStatus)
+                                input(type='radio' name='tenantStatus' value='' checked='' === pageData.tenantStatus)
                                 |
                                 | Any
                             label.radio
-                                input(type='radio' name='leaseStatus' value='Pending' checked='Pending' === pageData.leaseStatus)
+                                input(type='radio' name='tenantStatus' value='Applied' checked='Applied' === pageData.tenantStatus)
                                 |
-                                | Pending
+                                | Applied
                             label.radio
-                                input(type='radio' name='leaseStatus' value='Active' checked='Active' === pageData.leaseStatus)
+                                input(type='radio' name='tenantStatus' value='Current' checked='Current' === pageData.tenantStatus)
                                 |
-                                | Active
+                                | Current
                             label.radio
-                                input(type='radio' name='leaseStatus' value='Complete' checked=pageData.leaseStatus === 'Complete')
+                                input(type='radio' name='tenantStatus' value='Complete' checked='Complete' === pageData.tenantStatus)
                                 |
                                 | Complete
                     div.field.is-horizontal
                         div.field-label
-                        div.field-body: div.field: div.control: button.button.is-link.is-outlined(type='submit') Submit
+                        div.field-body: div.field: div.control: button.button.is-link.is-outlined(type='submit') Search
             div.column.is-10-desktop.is-offset-1-desktop
                 hr
                 table#tenants-table.table.is-striped.is-hoverable
@@ -57,7 +57,7 @@ html
                             th Last Name
                             th Unit Number
                             th Property Name
-                            th Lease Status
+                            th Tenant Status
                     thead: +columns
                     if tenants
                         if tenants.length > 10
@@ -68,5 +68,5 @@ html
                                 td=tenant.last_name
                                 td=tenant.unit_number
                                 td=tenant.property_name
-                                td=tenant.lease_status
+                                td=tenant.tenant_status
         include ../includes/foot
