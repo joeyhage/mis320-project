@@ -9,10 +9,26 @@ nav.navbar.is-light(role='navigation' aria-label='main navigation')
     div.navbar-menu
         div.navbar-start
             a.navbar-item(class=(parent === 'dashboard' && 'is-active') href='/') Dashboard
-            a.navbar-item(class=(parent === 'tenants' && 'is-active') href='/tenants') Tenants
-            a.navbar-item(class=(parent === 'employees' && 'is-active') href='/employees') Employees
-            a.navbar-item(class=(parent === 'maintenance' && 'is-active') href='/maintenance') Maintenance
-            a.navbar-item(class=(parent === 'administration' && 'is-active') href='/administration') Administration
+            div.navbar-item.has-dropdown.is-hoverable
+                a.navbar-link(class=(parent === 'tenants' && 'is-active') href='/tenants') Tenants
+                div.navbar-dropdown
+                    a.navbar-item(href='/tenants/search') Search
+                        a.navbar-item(href='/tenants/new') New
+            div.navbar-item.has-dropdown.is-hoverable
+                a.navbar-link(class=(parent === 'employees' && 'is-active') href='/employees') Employees
+                div.navbar-dropdown
+                    a.navbar-item(href='/employees/search') Search
+                    a.navbar-item(href='/employees/new') New
+            div.navbar-item.has-dropdown.is-hoverable
+                a.navbar-link(class=(parent === 'maintenance' && 'is-active') href='/maintenance') Maintenance
+                div.navbar-dropdown
+                    a.navbar-item(href='/maintenance/requests') Requests
+                    a.navbar-item(href='/maintenance/orders') Orders
+                    a.navbar-item(href='/maintenance/vendors') Vendors
+            div.navbar-item.has-dropdown.is-hoverable
+                a.navbar-link(class=(parent === 'administration' && 'is-active') href='/administration') Administration
+                div.navbar-dropdown
+                    a.navbar-item(href='/administration/billing') Billing
         div.navbar-end
 if subheadings && subheadings.length > 0
     div.tabs: ul
