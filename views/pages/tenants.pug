@@ -34,13 +34,13 @@ html
                                 |
                                 | Applied
                             label.radio
-                                input(type='radio' name='tenantStatus' value='Current')
+                                input(type='radio' name='tenantStatus' value='Current Tenant')
                                 |
-                                | Current
+                                | Current Tenant
                             label.radio
-                                input(type='radio' name='tenantStatus' value='Complete')
+                                input(type='radio' name='tenantStatus' value='Past Tenant')
                                 |
-                                | Complete
+                                | Past Tenant
                     div.field.is-horizontal
                         div.field-label.is-normal
                         div.field-body: div.field: div.control: button.button.is-link.is-outlined(type='submit') Search
@@ -53,7 +53,7 @@ html
                             th Last Name
                             th Unit Number
                             th Property Name
-                            th Tenant Status
+                            th Status
                     thead: +columns
                     if tenants
                         if tenants.length > 10

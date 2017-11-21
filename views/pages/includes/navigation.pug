@@ -1,7 +1,8 @@
 nav.navbar.is-light(role='navigation' aria-label='main navigation')
     div.navbar-brand
         a.navbar-item(href='/'): img(src='/img/brand.png' alt='Hartley Properties')
-        a.navbar-item.is-hidden-desktop(href=`/${parent}`) #{parent.charAt(0).toUpperCase() + parent.slice(1)}
+        if parent
+            a.navbar-item.is-hidden-desktop(href=`/${parent}`) #{parent.charAt(0).toUpperCase() + parent.slice(1)}
         button.button.navbar-burger
             span
             span

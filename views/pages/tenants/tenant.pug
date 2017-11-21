@@ -3,20 +3,71 @@ html
     body
         include ../includes/navigation
         if (tenant)
-            div.container
+            div#tenant-info.container
                 h1.title.is-spaced #{tenant.last_name}, #{tenant.first_name}
-                h2.subtitle Property Name (Placeholder)
-                div.card(style='padding:20px')
-                    div
-                        strong Address:
-                        |
-                        | #{tenant.person_streetaddress}, #{tenant.person_city}, #{tenant.person_state} #{tenant.person_zipcode}
-                    div
-                        strong Phone Number:
-                        |
-                        | #{tenant.phone_number.substring(0,3)}-#{tenant.phone_number.substring(3,6)}-#{tenant.phone_number.substring(6)}
-                    div
-                        strong Email:
-                        |
-                        | #{tenant.email}
+                div.box
+                    span
+                        p.heading Personal Information
+                        a.has-text-link.expand-collapse(href='#' data-target-id='personal-info-content') Collapse
+                            span.icon: i.fa.fa-angle-down
+                    div#personal-info-content
+                        hr
+                        div.tile.is-ancestor
+                            div.tile.is-parent: div.tile.is-child
+                                div
+                                    strong Permanent Address -
+                                    span  #{tenant.person_streetaddress}, #{tenant.person_city}, #{tenant.person_state} #{tenant.person_zipcode}
+                                div
+                                    strong Phone Number -
+                                    span  #{tenant.phone_number.substring(0,3)}-#{tenant.phone_number.substring(3,6)}-#{tenant.phone_number.substring(6)}
+                                div
+                                    strong Email -
+                                    span  #{tenant.email}
+                            div.tile.is-parent: div.tile.is-child
+                                div
+                                    strong SSN -
+                                    span#masked-ssn  xxx-xx-#{tenant.ssn.substring(5)}
+                                    span#full-ssn  #{tenant.ssn.substring(0,3)}-#{tenant.ssn.substring(3,5)}-#{tenant.ssn.substring(5)}
+                                    button#show-ssn.button.is-danger.is-small Show
+                                div
+                                    strong Annual Income -
+                                    - var formatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 });
+                                    span  #{formatter.format(tenant.annual_income)}
+                div.box
+                    p.heading Leasing
+                    a.has-text-link.expand-collapse(href='#' data-target-id='leasing-content') Collapse
+                        span.icon: i.fa.fa-angle-down
+                    div#leasing-content
+                        hr
+                div.columns.is-multiline
+                    div.column.is-6: div.box
+                        p.heading Service Requests
+                        a.has-text-link.expand-collapse(href='#' data-target-id='service-requests-content') Expand
+                            span.icon:  i.fa.fa-angle-down.up
+                        div#service-requests-content.is-hidden
+                            hr
+                    div.column.is-6: div.box
+                        p.heading Billing
+                        a.has-text-link.expand-collapse(href='#' data-target-id='billing-content') Expand
+                            span.icon: i.fa.fa-angle-down.up
+                        div#billing-content.is-hidden
+                            hr
+                    div.column.is-4: div.box
+                        p.heading Parking
+                        a.has-text-link.expand-collapse(href='#' data-target-id='parking-content') Expand
+                            span.icon:  i.fa.fa-angle-down.up
+                        div#parking-content.is-hidden
+                            hr
+                    div.column.is-4: div.box
+                        p.heading Pets
+                        a.has-text-link.expand-collapse(href='#' data-target-id='pets-content') Expand
+                            span.icon:  i.fa.fa-angle-down.up
+                        div#pets-content.is-hidden
+                            hr
+                    div.column.is-4: div.box
+                        p.heading Contacts
+                        a.has-text-link.expand-collapse(href='#' data-target-id='contacts-content') Expand
+                            span.icon:  i.fa.fa-angle-down.up
+                        div#contacts-content.is-hidden
+                            hr
         include ../includes/foot

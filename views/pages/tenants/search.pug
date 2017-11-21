@@ -27,7 +27,7 @@ html
                                             selected=property.property_name === pageData.property
                                         )=property.property_name
                     div.field.is-horizontal
-                        div.field-label: label.labelTenant Status
+                        div.field-label: label.labelTenant Tenant Status
                         div.field-body: div.field: div.control
                             label.radio
                                 input(type='radio' name='tenantStatus' value='' checked='' === pageData.tenantStatus)
@@ -38,13 +38,13 @@ html
                                 |
                                 | Applied
                             label.radio
-                                input(type='radio' name='tenantStatus' value='Current' checked='Current' === pageData.tenantStatus)
+                                input(type='radio' name='tenantStatus' value='Current Tenant' checked='Current Tenant' === pageData.tenantStatus)
                                 |
-                                | Current
+                                | Current Tenant
                             label.radio
-                                input(type='radio' name='tenantStatus' value='Complete' checked='Complete' === pageData.tenantStatus)
+                                input(type='radio' name='tenantStatus' value='Past' checked='Past Tenant' === pageData.tenantStatus)
                                 |
-                                | Complete
+                                | Past Tenant
                     div.field.is-horizontal
                         div.field-label
                         div.field-body: div.field: div.control: button.button.is-link.is-outlined(type='submit') Search
@@ -57,7 +57,7 @@ html
                             th Last Name
                             th Unit Number
                             th Property Name
-                            th Tenant Status
+                            th Status
                     thead: +columns
                     if tenants
                         if tenants.length > 10

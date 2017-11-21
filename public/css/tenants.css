@@ -4,3 +4,31 @@ table {
 tbody>tr {
     cursor: pointer;
 }
+#show-ssn {
+    margin-left: 5px;
+}
+#full-ssn {
+    display: none;
+}
+.box p.heading {
+    font-size: 1.2em;
+    color: #384b6c;
+    display: inline-flex;
+}
+.box a.expand-collapse {
+    display: inline-flex;
+    float: right;
+}
+.fa.fa-angle-down {
+    -moz-transition: all .5s;
+    -webkit-transition: all .5s;
+    transition: all .5s;
+}
+.fa.fa-angle-down.up {
+    -moz-transform:rotate(-180deg);
+    -webkit-transform:rotate(-180deg);
+    transform:rotate(-180deg);
+}
+.box hr {
+    margin: 5px 0 20px 0;
+}
