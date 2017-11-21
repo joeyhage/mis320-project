@@ -1,22 +1,21 @@
 const tenants = require('../exampleData/tenant.json');
 const sqlUtil = require('./sqlUtil');
 
-const getRenderData = async (parent, page, pageData, client) => {
+const getRenderData = async (parent, page, pageData, noQuery) => {
 	const renderData = {
 		parent,
 		page,
 		pageData,
 		...getTemplateData(parent),
 	};
-	if (client) {
-		const results = await getPageData(page ? `${parent}/${page}` : parent, client, pageData);
-		return {
-			...renderData,
-			...results
-		};
-	} else {
+	if (noQuery) {
 		return renderData;
 	}
+	const results = await getPageData(page ? `${parent}/${page}` : parent, pageData);
+	return {
+		...renderData,
+		...results
+	};
 };
 const getTemplateData = parent => {
 	switch (parent) {
@@ -86,20 +85,20 @@ const getTemplateData = parent => {
 	}
 };
 
-const getPageData = async (page, client, pageData) => {
-	const lookupDataForPage = pageDataSwitch(client, pageData)[page];
+const getPageData = async (page, pageData) => {
+	const queryPageData = pageDataSwitch(pageData)[page];
 	if (process.env.DEBUG) {
 		console.log('pageData', pageData);
-		console.log('lookupdataforpage', lookupDataForPage);
+		console.log('lookupdataforpage', queryPageData);
 	}
-	if (lookupDataForPage) {
-		return await lookupDataForPage();
+	if (queryPageData) {
+		return await queryPageData();
 	}
 };
 
-const pageDataSwitch = (client, pageData) => ({
+const pageDataSwitch = pageData => ({
 	'tenants': async () => {
-		const results = await Promise.all([sqlUtil.getTenants(client), sqlUtil.getPropertyNames(client)]);
+		const results = await Promise.all([sqlUtil.getTenants(), sqlUtil.getPropertyNames()]);
 		return results.reduce((accumulator, currentValue) => {
 			const key = Object.keys(currentValue)[0];
 			return {
@@ -109,10 +108,10 @@ const pageDataSwitch = (client, pageData) => ({
 		}, {});
 	},
 	'tenants/tenant': async () => {
-		return await sqlUtil.getTenantByID(client, parseInt(pageData));
+		return await sqlUtil.getTenantByID(parseInt(pageData));
 	},
 	'tenants/search': async () => {
-		const results = await Promise.all([sqlUtil.searchTenants(client, pageData), sqlUtil.getPropertyNames(client)]);
+		const results = await Promise.all([sqlUtil.searchTenants(pageData), sqlUtil.getPropertyNames()]);
 		return results.reduce((accumulator, currentValue) => {
 			const key = Object.keys(currentValue)[0];
 			return {
@@ -122,13 +121,13 @@ const pageDataSwitch = (client, pageData) => ({
 		}, {});
 	},
 	'employees': async () => {
-		return await sqlUtil.getEmployees(client);
+		return await sqlUtil.getEmployees();
 	},
 	'employees/employee': async () => {
-		return await sqlUtil.getEmployeeByID(client, parseInt(pageData));
+		return await sqlUtil.getEmployeeByID(parseInt(pageData));
 	},
 	'employees/search': async () => {
-		return await sqlUtil.searchEmployees(client, pageData.search);
+		return await sqlUtil.searchEmployees(pageData.search);
 	}
 });
 

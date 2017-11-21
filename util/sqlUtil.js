@@ -1,65 +1,84 @@
 const queryBuilder = require('./queryBuilder');
 
-const { Client } = require('pg');
+const { Pool } = require('pg');
 
-const createClient = async () => {
-	const client = new Client({
-		connectionString: process.env.DATABASE_URL,
-		ssl: true,
-	});
-	await client.connect();
-	return client;
+const pool = new Pool({
+	connectionString: process.env.DATABASE_URL,
+	ssl: true
+});
+
+const query = async (connection, queryString, params) => {
+	const {rows} = await connection.query(queryString, params);
+	return rows;
 };
 
-const getTenants = async client => {
+const clientQuery = async (client, queryString, params) => {
+	try {
+		return await query(client, queryString, params);
+	} catch (err) {
+		console.trace(new Error(err));
+	} finally {
+		client.release();
+	}
+};
+
+const poolQuery = async (queryString, params) => {
+	try {
+		return await query(pool, queryString, params);
+	} catch (err) {
+		console.trace(new Error(err));
+	}
+};
+
+const getTenants = async () => {
 	const tenantsQuery = queryBuilder.tenantsQuery();
-	const results = await client.query(tenantsQuery.query);
-	setTenantStatus(results);
-	return {tenants: results.rows};
+	const rows = await poolQuery(tenantsQuery.query);
+	setTenantStatus(rows);
+	return {tenants: rows};
 };
 
-const getTenantByID = async (client, tenantID) => {
-	const results = await client.query(
+const getTenantByID = async tenantID => {
+	const rows = await poolQuery(
 		'select * from person, tenant where personid=tenantid and tenantid=$1',
 		[tenantID]
 	);
-	return {tenant: results.rows[0]};
+	return {tenant: rows[0]};
 };
 
-const searchTenants = async (client, {search, property, tenantStatus}) => {
+const searchTenants = async ({search, property, tenantStatus}) => {
 	const formattedSearchQuery = formatSearchQuery(search);
 	const tenantsQuery = queryBuilder.tenantsQuery(formattedSearchQuery, property, tenantStatus);
-	const results = await client.query(tenantsQuery.query, tenantsQuery.params);
-	setTenantStatus(results);
+	const rows = await poolQuery(tenantsQuery.query, tenantsQuery.params);
+	setTenantStatus(rows);
 	if (process.env.DEBUG) {
 		console.log('sqlUtil - searchTenants');
-		console.dir(results.rows);
+		console.dir(rows);
 	}
-	return {tenants: results.rows};
+	return {tenants: rows};
 };
 
-const getEmployees = async client => {
-	const results = await client.query(
+const getEmployees = async () => {
+	const rows = await poolQuery(
 		'select * from person, employee e ' +
 		'left outer join job j on j.employeeid=e.employeeid ' +
 		'where personid=e.employeeid and job_end_date is null ' +
 		'order by personid desc'
 	);
-	return {employees: results.rows};
+	return {employees: rows};
 };
 
-const getEmployeeByID = async (client, employeeID) => {
-	const results = await client.query(
+const getEmployeeByID = async employeeID => {
+	const rows = await poolQuery(
 		'select * from person, employee e left outer join job j on j.employeeid=e.employeeid ' +
 		'where personid=e.employeeid and e.employeeid=$1 and job_end_date is null',
 		[employeeID]
 	);
-	return {employee: results.rows[0]};
+	return {employee: rows[0]};
 };
 
-const searchEmployees = async (client, searchQuery) => {
+const searchEmployees = async searchQuery => {
 	const formattedSearchQuery = formatSearchQuery(searchQuery);
-	const results = await client.query(
+	const rows = await poolQuery(
 		'select * from person, employee e ' +
 		'left outer join job j on j.employeeid=e.employeeid ' +
 		'where personid=e.employeeid and job_end_date is null and (' +
@@ -68,18 +87,18 @@ const searchEmployees = async (client, searchQuery) => {
 		'order by personid desc',
 		[`%${formattedSearchQuery}%`]
 	);
-	return {employees: results.rows};
+	return {employees: rows};
 };
 
-const getPropertyNames = async client => {
-	const results = await client.query(
+const getPropertyNames = async () => {
+	const rows = await poolQuery(
 		'select property_name from property'
 	);
-	return {properties: results.rows};
+	return {properties: rows};
 };
 
-const createPerson = async (person, client, isTenant, isEmployee) => {
-	return await client.query(
+const createPerson = async (person, isTenant, isEmployee) => {
+	return await poolQuery(
 		'insert into person values (default,$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) returning *',
 		[person.firstName, person.lastName, person.phone1 + person.phone2 + person.phone3,
 			person.dob, person.ssn1 + person.ssn2 + person.ssn3, person.email,
@@ -88,34 +107,28 @@ const createPerson = async (person, client, isTenant, isEmployee) => {
 };
 
 const createTenant = async tenant => {
-	const client = await createClient();
-	const personResult = await createPerson(tenant, client, true, false);
-	const person = personResult.rows[0];
-	const tenantResult = await client.query(
+	const personResult = await createPerson(tenant, true, false);
+	const tenantResult = await poolQuery(
 		'insert into tenant values ($1,$2) returning *',
-		[person.personid, tenant.annualIncome]
+		[personResult[0].personid, tenant.annualIncome]
 	);
-	await client.end();
 
 	return {
-		...person,
-		...tenantResult.rows[0]
+		...personResult[0],
+		...tenantResult[0]
 	};
 };
 
 const createEmployee = async employee => {
-	const client = await createClient();
-	const personResult = await createPerson(employee, client, false, true);
-	const person = personResult.rows[0];
-	const employeeResult = await client.query(
+	const personResult = await createPerson(employee, false, true);
+	const employeeResult = await poolQuery(
 		'insert into employee values ($1,$2) returning *',
-		[person.personid, employee.dateOfHire]
+		[personResult[0].personid, employee.dateOfHire]
 	);
-	await client.end();
 
 	return {
-		...person,
-		...employeeResult.rows[0]
+		...personResult[0],
+		...employeeResult[0]
 	};
 };
 
@@ -132,21 +145,20 @@ const formatPhoneNumberQuery = search => {
 	return search.split(match).join('');
 };
 
-const setTenantStatus = results => {
-	for (const tenant of results.rows) {
+const setTenantStatus = rows => {
+	for (const tenant of rows) {
 		tenant.tenant_status = determineTenantStatus(tenant.lease_status);
 	}
 };
 
 const determineTenantStatus = leaseStatus => {
-	if (leaseStatus === 'Active') return 'Current';
-	if (leaseStatus === 'Complete') return 'Past';
+	if (leaseStatus === 'Active') return 'Current Tenant';
+	if (leaseStatus === 'Complete') return 'Past Tenant';
 	if (leaseStatus === 'Pending') return 'Applied';
 	return '';
 };
 
 module.exports = {
-	createClient,
 	getTenants,
 	getTenantByID,
 	searchTenants,

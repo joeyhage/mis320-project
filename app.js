@@ -3,7 +3,7 @@ const express = require('express'),
 	session = require('express-session'),
 	bodyParser = require('body-parser'),
 	{ getRenderData } = require('./util/pageRenderUtil'),
-	{ createClient, createTenant, createEmployee } = require('./util/sqlUtil'),
+	{ createTenant, createEmployee } = require('./util/sqlUtil'),
 	pathUtil = require('./util/pathUtil');
 
 app.set('port', (process.env.PORT || 5000));
@@ -22,7 +22,7 @@ app.use(session({
 }));
 
 app.use((req, res, next) => {
-	resetSession(req.session);
+	resetPageInfo(req.session);
 	if (req.method === 'POST') {
 		return next();
 	}
@@ -101,10 +101,9 @@ app.get(pathUtil.simplePaths, async (req, res) => {
 	if (req.session.redirectUrl) {
 		return res.redirect(req.session.redirectUrl);
 	}
+	resetPersonInfo(req.session);
 	const {parent, page, pageData, view} = req.session;
-	const client = await createClient();
-	const renderData = await getRenderData(parent, page, pageData, client);
-	await client.end();
+	const renderData = await getRenderData(parent, page, pageData);
 	if (page === 'search' && (req.query.search || req.query.property || req.query.tenantStatus)) {
 		if (renderData.tenants && renderData.tenants.length === 1) {
 			const tenant = renderData.tenants[0];
@@ -124,18 +123,23 @@ app.get(pathUtil.simplePaths, async (req, res) => {
 
 app.get([pathUtil.tenantInfoPath, pathUtil.employeeInfoPath] , async (req, res) => {
 	const {parent, page, pageData, view, tenant, employee} = req.session;
-	req.session.tenant = null;
-	req.session.employee = null;
 	if (tenant) {
-		const renderData = getRenderData(parent, page, pageData);
+		const renderData = await getRenderData(parent, page, pageData, true);
+		if (process.env.DEBUG) {
+			console.dir(renderData);
+		}
 		res.render(view, {...renderData, ...tenant});
 	} else if (employee) {
-		const renderData = getRenderData(parent, page, pageData);
+		const renderData = await getRenderData(parent, page, pageData, true);
+		if (process.env.DEBUG) {
+			console.dir(renderData);
+		}
 		res.render(view, {...renderData, ...employee});
 	} else {
-		const client = await createClient();
-		const renderData = await getRenderData(parent, page, pageData, client);
-		await client.end();
+		const renderData = await getRenderData(parent, page, pageData);
+		if (process.env.DEBUG) {
+			console.dir(renderData);
+		}
 		res.render(view, renderData);
 	}
 });
@@ -152,12 +156,17 @@ app.post('/employees/new', async (req, res) => {
 	res.redirect(`/employees/${employee.employeeid}`);
 });
 
-const resetSession = session => {
+const resetPageInfo = session => {
 	session.parent = null;
 	session.page = null;
 	session.pageData = null;
 	session.view = null;
 	session.redirectUrl = null;
+};
+
+const resetPersonInfo = session => {
+	session.tenant = null;
+	session.employee = null;
 };
 
 app.listen(app.get('port'), () => {

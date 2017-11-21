@@ -17,8 +17,8 @@ const administrationPath = new RegExp(/^\/administration(\/)?$/);
 const administrationSubpagePath = new RegExp(/^\/administration\/([a-z-]+)(\/)?$/);
 
 const simplePaths = [dashboardPath,
-	tenantsPath, tenantSearchPath, tenantInfoPath, tenantsSubpagePath,
-	employeesPath, employeeSearchPath, employeeInfoPath, employeesSubpagePath,
+	tenantsPath, tenantSearchPath, tenantsSubpagePath,
+	employeesPath, employeeSearchPath, employeesSubpagePath,
 	maintenancePath, maintenanceSubpagePath,
 	administrationPath, administrationSubpagePath];
 
