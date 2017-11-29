@@ -6,7 +6,7 @@ const dateOfHire = document.querySelector('input[name="dateOfHire"]');
 if (employeeSearch) {
 	employeeSearch.addEventListener('submit', event => {
 		const searchQuery = event.target.elements.namedItem('searchQuery').value;
-		if (!searchQuery || searchQuery.includes('(') || searchQuery.includes(')')) {
+		if (searchQuery.includes('(') || searchQuery.includes(')')) {
 			event.preventDefault();
 		}
 	});

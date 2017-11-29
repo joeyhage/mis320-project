@@ -12,8 +12,8 @@
 .title {
     color: #384b6c;
 }
-div.navbar-menu a.navbar-item.is-active {
-    background-color: #cfd4df !important;
+div.navbar-menu a.navbar-item.is-active, div.navbar-menu a.navbar-link.is-active {
+    background-color: rgba(110, 165, 232, 0.43) !important;
 }
 .field.is-horizontal.margin-bottom {
     margin-bottom: 1.5rem;

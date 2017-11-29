@@ -4,70 +4,216 @@ html
         include ../includes/navigation
         if (tenant)
             div#tenant-info.container
-                h1.title.is-spaced #{tenant.last_name}, #{tenant.first_name}
-                div.box
-                    span
+                div.title
+                    h1(style='width:100%') #{tenant.last_name}, #{tenant.first_name}
+                div.group-content
+                    a.content-heading(href='#' data-target-id='personal-info-content')
                         p.heading Personal Information
-                        a.has-text-link.expand-collapse(href='#' data-target-id='personal-info-content') Collapse
-                            span.icon: i.fa.fa-angle-down
+                    a.has-text-link.expand-collapse(href='#' data-target-id='personal-info-content') Collapse
+                        span.icon: i.fa.fa-angle-down
                     div#personal-info-content
-                        hr
-                        div.tile.is-ancestor
-                            div.tile.is-parent: div.tile.is-child
+                        div.columns
+                            div.column.is-6
                                 div
                                     strong Permanent Address -
-                                    span  #{tenant.person_streetaddress}, #{tenant.person_city}, #{tenant.person_state} #{tenant.person_zipcode}
+                                    span #{tenant.person_streetaddress}, #{tenant.person_city}, #{tenant.person_state} #{tenant.person_zipcode}
                                 div
                                     strong Phone Number -
-                                    span  #{tenant.phone_number.substring(0,3)}-#{tenant.phone_number.substring(3,6)}-#{tenant.phone_number.substring(6)}
+                                    span #{tenant.phone_number.substring(0,3)}-#{tenant.phone_number.substring(3,6)}-#{tenant.phone_number.substring(6)}
                                 div
                                     strong Email -
-                                    span  #{tenant.email}
-                            div.tile.is-parent: div.tile.is-child
+                                    span #{tenant.email}
+                            div.column.is-6
                                 div
                                     strong SSN -
-                                    span#masked-ssn  xxx-xx-#{tenant.ssn.substring(5)}
-                                    span#full-ssn  #{tenant.ssn.substring(0,3)}-#{tenant.ssn.substring(3,5)}-#{tenant.ssn.substring(5)}
-                                    button#show-ssn.button.is-danger.is-small Show
+                                    span#masked-ssn xxx-xx-#{tenant.ssn.substring(5)}
+                                    span#full-ssn #{tenant.ssn.substring(0,3)}-#{tenant.ssn.substring(3,5)}-#{tenant.ssn.substring(5)}
+                                    button#show-ssn.button.is-danger.is-outlined.is-small Show
                                 div
                                     strong Annual Income -
-                                    - var formatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 });
-                                    span  #{formatter.format(tenant.annual_income)}
-                div.box
-                    p.heading Leasing
+                                    span.monetary #{tenant.annual_income}
+                div.group-content
+                    a.content-heading(href='#' data-target-id='leasing-content')
+                        p.heading Leasing
+                        if leasing
+                            span.heading-details (#{leasing.length} #{leasing.length === 1 ? 'Item' : 'Items'})
+                        else
+                            span.heading-details (0 Items)
                     a.has-text-link.expand-collapse(href='#' data-target-id='leasing-content') Collapse
                         span.icon: i.fa.fa-angle-down
                     div#leasing-content
-                        hr
+                        if leasing && leasing.length
+                            table.table.is-hoverable
+                                thead: tr
+                                    th Status
+                                    th Start Date
+                                    th End Date
+                                    th Unit
+                                    th Property
+                                tbody: for lease in leasing
+                                    tr
+                                        td=lease.lease_status
+                                        td.date=lease.lease_start_date
+                                        td.date=lease.lease_end_date
+                                        td=lease.unit_number
+                                        td=lease.property_name
+                        else
+                            p No Leases
+                hr(style='margin-top:30px;border-bottom:3px double #384b6c;')
+                div.title
+                    div.has-text-primary
+                        a.is-size-4.has-text-primary: span#display-column-list.icon: i.fa.fa-th-list
+                        p.is-size-6(style='text-align:center') List
+                    div.has-text-primary
+                        a.is-size-4.has-text-primary: span#display-column-group.icon: i.fa.fa-th-large
+                        p.is-size-6(style='text-align:center') Grid
                 div.columns.is-multiline
-                    div.column.is-6: div.box
-                        p.heading Service Requests
+                    div.column.is-6: div.group-content
+                        a.content-heading(href='#' data-target-id='service-requests-content')
+                            p.heading Service Requests
+                            if service_requests
+                                span.heading-details (#{service_requests.length} #{service_requests.length === 1 ? 'Item' : 'Items'})
+                            else
+                                span.heading-details (0 Items)
                         a.has-text-link.expand-collapse(href='#' data-target-id='service-requests-content') Expand
                             span.icon:  i.fa.fa-angle-down.up
                         div#service-requests-content.is-hidden
-                            hr
-                    div.column.is-6: div.box
-                        p.heading Billing
+                            if service_requests && service_requests.length
+                                table.table.is-hoverable
+                                    thead: tr
+                                        th Created
+                                        th Status
+                                        th Priority
+                                        th Description
+                                    tbody: for request in service_requests
+                                        tr
+                                            td.date=request.request_create_date
+                                            td=request.request_status
+                                            td=request.request_priority
+                                            td(style='overflow:wrap')=request.request_description
+                            else
+                                p No Service Requests
+                    div.column.is-6: div.group-content
+                        a.content-heading(href='#' data-target-id='billing-content')
+                            p.heading Billing
+                            if bills
+                                span.heading-details (#{bills.length} #{bills.length === 1 ? 'Item' : 'Items'})
+                            else
+                                span.heading-details (0 Items)
                         a.has-text-link.expand-collapse(href='#' data-target-id='billing-content') Expand
                             span.icon: i.fa.fa-angle-down.up
                         div#billing-content.is-hidden
-                            hr
-                    div.column.is-4: div.box
-                        p.heading Parking
+                            if bills && bills.length
+                                table.table.is-hoverable
+                                    thead: tr
+                                        th Amount
+                                        th Due Date
+                                        th Payment Date
+                                    tbody: for bill in bills
+                                        tr
+                                            td.monetary=bill.bill_amount
+                                            td.date=bill.due_date
+                                            td.date=bill.payment_date
+                            else
+                                p No Bills
+                    div.column.is-6: div.group-content
+                        a.content-heading(href='#' data-target-id='parking-content')
+                            p.heading Parking
+                            if parking
+                                span.heading-details (#{parking.length} #{parking.length === 1 ? 'Item' : 'Items'})
+                            else
+                                span.heading-details (0 Items)
                         a.has-text-link.expand-collapse(href='#' data-target-id='parking-content') Expand
                             span.icon:  i.fa.fa-angle-down.up
                         div#parking-content.is-hidden
-                            hr
-                    div.column.is-4: div.box
-                        p.heading Pets
-                        a.has-text-link.expand-collapse(href='#' data-target-id='pets-content') Expand
+                            if parking && parking.length
+                                table.table.is-hoverable
+                                    thead: tr
+                                        th Plate
+                                        th Stall
+                                        th Property
+                                        th Effective
+                                        th Expires
+                                    tbody: for permit in parking
+                                        tr
+                                            td=permit.plate_no
+                                            td=permit.stall
+                                            td=permit.property_name
+                                            td.date=permit.effective_date
+                                            td.date=permit.expiration_date
+                            else
+                                p No Parking Permits
+                    div.column.is-6: div.group-content
+                        a.content-heading(href='#' data-target-id='notes-content')
+                            p.heading Notes
+                            if notes
+                                span.heading-details (#{notes.length} #{notes.length === 1 ? 'Item' : 'Items'})
+                            else
+                                span.heading-details (0 Items)
+                        a.has-text-link.expand-collapse(href='#' data-target-id='notes-content') Expand
                             span.icon:  i.fa.fa-angle-down.up
-                        div#pets-content.is-hidden
-                            hr
-                    div.column.is-4: div.box
-                        p.heading Contacts
+                        div#notes-content.is-hidden
+                            if notes && notes.length
+                                table.table.is-hoverable
+                                    thead: tr
+                                        th Type
+                                        th Date
+                                        th Details
+                                    tbody: for note in notes
+                                        tr
+                                            td=note.note_type
+                                            td.date=note.note_date
+                                            td(style='overflow:wrap')=note.note_details
+                            else
+                                p No Notes
+                    div.column.is-6: div.group-content
+                        a.content-heading(href='#' data-target-id='contacts-content')
+                            p.heading Contacts
+                            if contacts
+                                span.heading-details (#{contacts.length} #{contacts.length === 1 ? 'Item' : 'Items'})
+                            else
+                                span.heading-details (0 Items)
                         a.has-text-link.expand-collapse(href='#' data-target-id='contacts-content') Expand
                             span.icon:  i.fa.fa-angle-down.up
                         div#contacts-content.is-hidden
-                            hr
+                            if contacts && contacts.length
+                                table.table.is-hoverable.is-striped
+                                    thead: tr
+                                        th Name
+                                        th Phone Number
+                                        th Type
+                                        th Relationship
+                                    tbody: for contact in contacts
+                                        tr
+                                            td #{contact.first_name} #{contact.last_name}
+                                            td #{contact.phone_number.substring(0,3)}-#{contact.phone_number.substring(3,6)}-#{contact.phone_number.substring(6)}
+                                            td=contact.contact_type
+                                            td=contact.relationship_to_tenant
+                            else
+                                p No Contacts
+                    div.column.is-6: div.group-content
+                        a.content-heading(href='#' data-target-id='pets-content')
+                            p.heading Pets
+                            if pets
+                                span.heading-details (#{pets.length} #{pets.length === 1 ? 'Item' : 'Items'})
+                            else
+                                span.heading-details (0 Items)
+                        a.has-text-link.expand-collapse(href='#' data-target-id='pets-content') Expand
+                            span.icon:  i.fa.fa-angle-down.up
+                        div#pets-content.is-hidden
+                            if pets && pets.length
+                                table.table.is-hoverable
+                                    thead: tr
+                                        th Type
+                                        th Weight
+                                        th Start Date
+                                        th End Date
+                                    tbody: for pet in pets
+                                        tr
+                                            td=pet.pet_type
+                                            td #{parseInt(pet.weight, 10)} lbs
+                                            td.date=pet.pet_startdate
+                                            td.date=pet.pet_enddate
+                            else
+                                p No Pets
         include ../includes/foot

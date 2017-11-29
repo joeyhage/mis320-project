@@ -27,22 +27,22 @@ html
                                             selected=property.property_name === pageData.property
                                         )=property.property_name
                     div.field.is-horizontal
-                        div.field-label: label.labelTenant Tenant Status
+                        div.field-label: label.label Tenant Status
                         div.field-body: div.field: div.control
                             label.radio
-                                input(type='radio' name='tenantStatus' value='' checked='' === pageData.tenantStatus)
+                                input(type='radio' name='tenantStatus' value='' checked=('' === pageData.tenantStatus))
                                 |
                                 | Any
                             label.radio
-                                input(type='radio' name='tenantStatus' value='Applied' checked='Applied' === pageData.tenantStatus)
+                                input(type='radio' name='tenantStatus' value='Applied' checked=('Applied' === pageData.tenantStatus))
                                 |
                                 | Applied
                             label.radio
-                                input(type='radio' name='tenantStatus' value='Current Tenant' checked='Current Tenant' === pageData.tenantStatus)
+                                input(type='radio' name='tenantStatus' value='Current Tenant' checked=('Current Tenant' === pageData.tenantStatus))
                                 |
                                 | Current Tenant
                             label.radio
-                                input(type='radio' name='tenantStatus' value='Past' checked='Past Tenant' === pageData.tenantStatus)
+                                input(type='radio' name='tenantStatus' value='Past' checked=('Past Tenant' === pageData.tenantStatus))
                                 |
                                 | Past Tenant
                     div.field.is-horizontal
@@ -51,14 +51,12 @@ html
             div.column.is-10-desktop.is-offset-1-desktop
                 hr
                 table#tenants-table.table.is-striped.is-hoverable
-                    mixin columns
-                        tr
-                            th First Name
-                            th Last Name
-                            th Unit Number
-                            th Property Name
-                            th Status
-                    thead: +columns
+                    thead: tr
+                        th First Name
+                        th Last Name
+                        th Unit Number
+                        th Property Name
+                        th Status
                     if tenants
                         if tenants.length > 10
                             tfoot: +columns

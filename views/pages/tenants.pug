@@ -47,14 +47,12 @@ html
             div.column.is-10-desktop.is-offset-1-desktop
                 hr
                 table#tenants-table.table.is-striped.is-hoverable
-                    mixin columns
-                        tr
-                            th First Name
-                            th Last Name
-                            th Unit Number
-                            th Property Name
-                            th Status
-                    thead: +columns
+                    thead: tr
+                        th First Name
+                        th Last Name
+                        th Unit Number
+                        th Property Name
+                        th Status
                     if tenants
                         if tenants.length > 10
                             tfoot: +columns

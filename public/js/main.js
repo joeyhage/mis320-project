@@ -6,6 +6,25 @@ document.addEventListener('DOMContentLoaded', () => {
 			document.querySelector('div.navbar-menu').classList.toggle('is-active');
 		});
 	}
+	const dateElements = document.querySelectorAll('.date');
+	if (dateElements && dateElements.length) {
+		for (const dateElement of dateElements) {
+			const dateString = dateElement.innerHTML;
+			if (dateString) {
+				dateElement.innerHTML = new Date(dateString).toLocaleDateString('en-US', {year: 'numeric', month: 'short', day: 'numeric'});
+			}
+		}
+	}
+	const monetaryElements = document.querySelectorAll('.monetary');
+	if (monetaryElements && monetaryElements.length) {
+		const numberFormat = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 });
+		for (const monetaryElement of monetaryElements) {
+			const monetaryAmount = monetaryElement.innerHTML;
+			if (monetaryAmount) {
+				monetaryElement.innerHTML = numberFormat.format(monetaryAmount);
+			}
+		}
+	}
 });
 
 const form = document.querySelector('form');

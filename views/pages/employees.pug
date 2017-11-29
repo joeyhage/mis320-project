@@ -16,12 +16,10 @@ html
                     div.control: button.button.is-link.is-outlined(type='submit') Search
             hr
             table#employees-table.table.is-striped.is-hoverable
-                mixin columns
-                    tr
-                        th First Name
-                        th Last Name
-                        th Job Title
-                thead: +columns
+                thead: tr
+                    th First Name
+                    th Last Name
+                    th Job Title
                 if employees
                     if employees.length > 10
                         tfoot: +columns

@@ -12,8 +12,10 @@ const query = async (connection, queryString, params) => {
 	return rows;
 };
 
-const clientQuery = async (client, queryString, params) => {
+const clientQuery = async (queryString, params) => {
+	let client;
 	try {
+		client = await pool.connect();
 		return await query(client, queryString, params);
 	} catch (err) {
 		console.trace(new Error(err));
@@ -38,17 +40,47 @@ const getTenants = async () => {
 };
 
 const getTenantByID = async tenantID => {
-	const rows = await poolQuery(
-		'select * from person, tenant where personid=tenantid and tenantid=$1',
-		[tenantID]
-	);
-	return {tenant: rows[0]};
+	return await promiseMapAll({
+		tenant: async () => {
+			const {query, params} = queryBuilder.tenantInfo(tenantID);
+			const tenantResult = await clientQuery(query, params);
+			return tenantResult[0];
+		},
+		leasing: async () => {
+			const {query, params} = queryBuilder.tenantLeases(tenantID);
+			return await clientQuery(query, params);
+		},
+		contacts: async () => {
+			const {query, params} = queryBuilder.tenantContacts(tenantID);
+			return await clientQuery(query, params);
+		},
+		parking: async () => {
+			const {query, params} = queryBuilder.tenantParkingPermits(tenantID);
+			return await clientQuery(query, params);
+		},
+		pets: async () => {
+			const {query, params} = queryBuilder.tenantPets(tenantID);
+			return await clientQuery(query, params);
+		},
+		notes: async () => {
+			const {query, params} = queryBuilder.tenantNotes(tenantID);
+			return await clientQuery(query, params);
+		},
+		service_requests: async () => {
+			const {query, params} = queryBuilder.tenantServiceRequests(tenantID);
+			return await clientQuery(query, params);
+		},
+		bills: async () => {
+			const {query, params} = queryBuilder.tenantBills(tenantID);
+			return await clientQuery(query, params);
+		}
+	});
 };
 
 const searchTenants = async ({search, property, tenantStatus}) => {
 	const formattedSearchQuery = formatSearchQuery(search);
-	const tenantsQuery = queryBuilder.tenantsQuery(formattedSearchQuery, property, tenantStatus);
-	const rows = await poolQuery(tenantsQuery.query, tenantsQuery.params);
+	const {query, params} = queryBuilder.tenantsQuery(formattedSearchQuery, property, tenantStatus);
+	const rows = await poolQuery(query, params);
 	setTenantStatus(rows);
 	if (process.env.DEBUG) {
 		console.log('sqlUtil - searchTenants');
@@ -156,6 +188,14 @@ const determineTenantStatus = leaseStatus => {
 	if (leaseStatus === 'Complete') return 'Past Tenant';
 	if (leaseStatus === 'Pending') return 'Applied';
 	return '';
+};
+
+const promiseMapAll = async promiseMap => {
+	const results = await Promise.all(Object.values(promiseMap).map(currentValue => currentValue()));
+	return Object.keys(promiseMap).reduce((accumulator, currentValue, currentIndex) => {
+		accumulator[currentValue] = results[currentIndex];
+		return accumulator;
+	}, {});
 };
 
 module.exports = {

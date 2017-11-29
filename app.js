@@ -22,6 +22,7 @@ app.use(session({
 }));
 
 app.use((req, res, next) => {
+	req.session.previousPage = req.session.page;
 	resetPageInfo(req.session);
 	if (req.method === 'POST') {
 		return next();
@@ -32,12 +33,10 @@ app.use((req, res, next) => {
 	} else if (pathUtil.tenantsPath.test(req.path)) {
 		req.session.parent = 'tenants';
 	} else if (pathUtil.tenantSearchPath.test(req.path)) {
-		req.session.parent = 'tenants';
-		req.session.page = 'search';
 		const search = req.query.search;
 		const property = req.query.property;
 		const tenantStatus = req.query.tenantStatus;
-		if (search || property || tenantStatus) {
+		if (search || property || tenantStatus || req.session.previousPage === 'search') {
 			req.session.tenantSearch = search;
 			req.session.property = property;
 			req.session.tenantStatus = tenantStatus;
@@ -45,6 +44,8 @@ app.use((req, res, next) => {
 			req.session.redirectUrl = '/tenants';
 			return next();
 		}
+		req.session.parent = 'tenants';
+		req.session.page = 'search';
 		req.session.pageData = {
 			search: req.session.tenantSearch,
 			property: req.session.property,

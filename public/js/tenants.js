@@ -9,7 +9,7 @@ if (tenantSearch) {
 		const search = elements.namedItem('search').value;
 		const property = elements.namedItem('property').value;
 		const tenantStatus = elements.namedItem('tenantStatus').value;
-		if ((!search && !property && !tenantStatus) || search.includes('(') || search.includes(')')) {
+		if (search.includes('(') || search.includes(')')) {
 			event.preventDefault();
 		}
 	});
@@ -32,7 +32,14 @@ if (newTenant) {
 	});
 }
 if (tenantInfo) {
-	document.querySelector('body').addEventListener('click', event => {
+	const nodeList = document.querySelectorAll('.content-heading');
+	for (const node of nodeList) {
+		node.addEventListener('click', event => {
+			expandCollapseTenantInfo(event.currentTarget);
+			event.preventDefault();
+		});
+	}
+	tenantInfo.addEventListener('click', event => {
 		const {target} = event;
 		if (target.id === 'show-ssn') {
 			const showSsn = document.getElementById('show-ssn');
@@ -61,6 +68,16 @@ if (tenantInfo) {
 				expandCollapseTenantInfo(parent);
 			} else if (parent2.classList.contains('expand-collapse')) {
 				expandCollapseTenantInfo(parent2);
+			} else if (parent.id === 'display-column-list' || target.id === 'display-column-list') {
+				const columns = document.querySelectorAll('.is-multiline>div.column');
+				for (column of columns) {
+					column.style.width = '100%';
+				}
+			} else if (parent.id === 'display-column-group' || target.id === 'display-column-group') {
+				const columns = document.querySelectorAll('.is-multiline>div.column');
+				for (column of columns) {
+					column.style.width = '50%';
+				}
 			}
 		}
 		event.preventDefault();
@@ -69,14 +86,20 @@ if (tenantInfo) {
 
 const expandCollapseTenantInfo = target => {
 	const content = document.getElementById(target.getAttribute('data-target-id'));
+	let indicatorTarget;
+	if (target.className === 'content-heading') {
+		indicatorTarget = target.nextSibling;
+	} else {
+		indicatorTarget = target;
+	}
 	setTimeout(() => {
-		target.querySelector('i').classList.toggle('up');
-	});
-	if (target.textContent === 'Collapse') {
+		indicatorTarget.querySelector('i').classList.toggle('up');
+	}, 10);
+	if (indicatorTarget.textContent === 'Collapse') {
 		content.classList.add('is-hidden');
-		target.innerHTML = target.innerHTML.replace('Collapse', 'Expand');
+		indicatorTarget.innerHTML = indicatorTarget.innerHTML.replace('Collapse', 'Expand');
 	} else {
 		content.classList.remove('is-hidden');
-		target.innerHTML = target.innerHTML.replace('Expand', 'Collapse');
+		indicatorTarget.innerHTML = indicatorTarget.innerHTML.replace('Expand', 'Collapse');
 	}
 };

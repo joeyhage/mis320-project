@@ -1,48 +1,30 @@
 {
-	"tenants": [{
-		"tenantID": 1,
-		"firstName": "Joey",
-		"lastName": "Hage",
-		"propertyID": 1,
-		"address": "1234 Main St.",
-		"phoneNumber": "123-456-7890",
-		"emailAddress": "example@iastate.edu",
-		"dob": "01-01-2001"
-	}, {
-		"tenantID": 2,
-		"firstName": "Zach",
-		"lastName": "Hartley",
-		"propertyID": 2,
-		"address": "4321 1st St.",
-		"phoneNumber": "123-456-7890",
-		"emailAddress": "example@iastate.edu",
-		"dob": "01-01-2001"
-	}, {
-		"tenantID": 3,
-		"firstName": "Laura",
-		"lastName": "Campbell",
-		"propertyID": 3,
-		"address": "5678 2nd St.",
-		"phoneNumber": "123-456-7890",
-		"emailAddress": "example@iastate.edu",
-		"dob": "01-01-2001"
-	}, {
-		"tenantID": 4,
-		"firstName": "Sean",
-		"lastName": "Richardson",
-		"propertyID": 4,
-		"address": "8765 3rd St.",
-		"phoneNumber": "123-456-7890",
-		"emailAddress": "example@iastate.edu",
-		"dob": "01-01-2001"
-	}, {
-		"tenantID": 5,
-		"firstName": "Kartikeya",
-		"lastName": "Vavilala",
-		"propertyID": 5,
-		"address": "9876 4th St.",
-		"phoneNumber": "123-456-7890",
-		"emailAddress": "example@iastate.edu",
-		"dob": "01-01-2001"
-	}]
+	"tenant": {
+		"personid": 1,
+		"first_name": "Joey",
+		"last_name": "Hage",
+		"phone_number": "9522703960",
+		"ssn": "111223333",
+		"email": "jmhage@iastate.edu",
+		"person_streetaddress": "1111 Main St",
+		"person_city": "Ames",
+		"person_state": "IA",
+		"person_zipcode": "50010",
+		"person_istenant": true,
+		"person_isemployee": false,
+		"annual_income": 60500.00,
+		"unit_number": 15,
+		"property_name": "Diamond Pointe",
+		"tenant_status": "Current"
+	},
+	"contacts": [
+		{
+			"personid": 7,
+			"first_name": "Michael",
+			"last_name": "Hage",
+			"phone_number": "6123280807",
+			"relationship_to_tenant": "Father",
+			"contact_type": "Emergency"
+		}
+	]
 }
