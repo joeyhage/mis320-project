@@ -2,4 +2,31 @@ html
     include ../includes/head
     body
         include ../includes/navigation
+        div.container
+            for bill in billing
+                div.card
+                    header.card-header
+                        p.card-header-title Bill #{bill[0].billid}
+                    div.card-content
+                        div
+                            strong Total -
+                            span=bill[0].bill_amount
+                        div
+                            strong Due Date -
+                            span.date=bill[0].due_date
+                        div
+                            strong Payment Date -
+                            span.date=bill[0].payment_date
+                        div
+                            strong Expenses
+                            table.table.is-striped.is-hoverable(style='width:100%')
+                                thead: tr
+                                    td Amount
+                                    td Frequency
+                                    td Description
+                                tbody: for expense in bill
+                                    tr
+                                        td=expense.expense_amount
+                                        td=expense.frequency
+                                        td(style='overflow:wrap')=expense.expense_description
         include ../includes/foot

@@ -108,16 +108,14 @@ app.get(pathUtil.simplePaths, async (req, res) => {
 	if (page === 'search' && (req.query.search || req.query.property || req.query.tenantStatus)) {
 		if (renderData.tenants && renderData.tenants.length === 1) {
 			const tenant = renderData.tenants[0];
-			req.session.tenant = tenant;
-			return res.redirect(`/tenants/${tenant.tenantid}`);
+			return res.redirect(`/tenants/${tenant.personid}`);
 		} else if (renderData.employees && renderData.employees.length === 1) {
 			const employee = renderData.employees[0];
-			req.session.employee = employee;
-			return res.redirect(`/employees/${employee.employeeid}`);
+			return res.redirect(`/employees/${employee.personid}`);
 		}
 	}
 	if (process.env.DEBUG) {
-		console.dir(renderData);
+		console.log(JSON.stringify(renderData));
 	}
 	res.render(view, renderData);
 });
@@ -127,19 +125,19 @@ app.get([pathUtil.tenantInfoPath, pathUtil.employeeInfoPath] , async (req, res) 
 	if (tenant) {
 		const renderData = await getRenderData(parent, page, pageData, true);
 		if (process.env.DEBUG) {
-			console.dir(renderData);
+			console.log(JSON.stringify(renderData));
 		}
-		res.render(view, {...renderData, ...tenant});
+		res.render(view, {...renderData, tenant});
 	} else if (employee) {
 		const renderData = await getRenderData(parent, page, pageData, true);
 		if (process.env.DEBUG) {
-			console.dir(renderData);
+			console.log(JSON.stringify(renderData));
 		}
-		res.render(view, {...renderData, ...employee});
+		res.render(view, {...renderData, employee});
 	} else {
 		const renderData = await getRenderData(parent, page, pageData);
 		if (process.env.DEBUG) {
-			console.dir(renderData);
+			console.log(JSON.stringify(renderData));
 		}
 		res.render(view, renderData);
 	}

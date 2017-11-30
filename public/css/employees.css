@@ -1,6 +1,58 @@
 table {
     width: 100%;
 }
-tbody>tr {
+#tenants-table>tbody>tr {
     cursor: pointer;
+}
+#personal-info-content strong {
+    margin-right: 5px;
+}
+#show-ssn {
+    margin-left: 5px;
+}
+#full-ssn {
+    display: none;
+}
+.group-content {
+    margin-bottom: 10px;
+}
+.group-content p.heading {
+    font-size: 1.2em;
+    color: #384b6c;
+    display: inline-flex;
+}
+.group-content a.expand-collapse {
+    float: right;
+}
+.fa.fa-angle-down {
+    -moz-transition: all .5s;
+    -webkit-transition: all .5s;
+    transition: all .5s;
+}
+.fa.fa-angle-down.up {
+    -moz-transform:rotate(-180deg);
+    -webkit-transform:rotate(-180deg);
+    transform:rotate(-180deg);
+}
+.content-heading {
+    border-bottom: 1px solid #384b6c;
+    cursor: pointer;
+    text-decoration: none;
+    color: #384b6c
+}
+.content-heading:hover {
+    border-bottom: 2px solid #384b6c;
+}
+.content-heading .heading {
+    margin-right: 5px;
+}
+.heading-details {
+    font-style: italic;
+}
+div.title {
+    display: inline-flex;
+    width: 100%;
+}
+div.title a {
+    margin: 10px;
 }

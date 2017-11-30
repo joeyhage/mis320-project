@@ -19,11 +19,24 @@ const tenantsQuery = (search, property, tenantStatus) => {
 		params.push(property);
 	}
 	if (tenantStatus) {
-		query += getLeaseStatusQuery(params.length + 1);
-		params.push(tenantStatus === 'Current Tenant' ? 'Active' : (tenantStatus === 'Past' ? 'Complete' : 'Pending'));
+		switch (tenantStatus) {
+			case 'Current Tenant':
+				query += getLeaseStatusQuery(params.length + 1);
+				params.push('Active');
+				break;
+			case 'Past':
+				query += getLeaseStatusQuery(params.length + 1);
+				params.push('Complete');
+				break;
+			case 'Applied':
+				query += getLeaseStatusQuery(params.length + 1);
+				params.push('Pending');
+				break;
+			default:
+				query += ' and t.tenantid not in (select tenantid from lease)'
+		}
 	}
 	query += orderBy;
-
 	return {query, params};
 };
 
@@ -49,7 +62,7 @@ const tenantLeases = tenantID => ({
 });
 
 const tenantContacts = tenantID => ({
-	query: 'select * from contact where tenantid=$1',
+	query: 'select * from contact c, person p where c.personid=p.personid and tenantid=$1',
 	params: [tenantID]
 });
 

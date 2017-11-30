@@ -60,7 +60,7 @@ html
                         else
                             p No Leases
                 hr(style='margin-top:30px;border-bottom:3px double #384b6c;')
-                div.title
+                div.title.is-hidden-mobile
                     div.has-text-primary
                         a.is-size-4.has-text-primary: span#display-column-list.icon: i.fa.fa-th-list
                         p.is-size-6(style='text-align:center') List
@@ -186,7 +186,10 @@ html
                                     tbody: for contact in contacts
                                         tr
                                             td #{contact.first_name} #{contact.last_name}
-                                            td #{contact.phone_number.substring(0,3)}-#{contact.phone_number.substring(3,6)}-#{contact.phone_number.substring(6)}
+                                            if contact.phone_number
+                                                td #{contact.phone_number.substring(0,3)}-#{contact.phone_number.substring(3,6)}-#{contact.phone_number.substring(6)}
+                                            else
+                                                td
                                             td=contact.contact_type
                                             td=contact.relationship_to_tenant
                             else

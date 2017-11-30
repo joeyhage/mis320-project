@@ -3,24 +3,62 @@ html
     body
         include ../includes/navigation
         if (employee)
-            div.container
-                h1.title.is-spaced #{employee.last_name}, #{employee.first_name}
-                if employee.job_title
-                    h2.subtitle=employee.job_title
-                div.card(style='padding:20px')
-                    if employee.address
-                        div
-                            strong Address:
-                            |
-                            | #{employee.person_streetaddress}, #{employee.person_city}, #{employee.person_state} #{employee.person_zipcode}
-                    if employee.phone_number
-                        div
-                            strong Phone Number:
-                            |
-                            | #{employee.phone_number.substring(0,3)}-#{employee.phone_number.substring(3,6)}-#{employee.phone_number.substring(6)}
-                    if employee.email
-                        div
-                            strong Email:
-                            |
-                            | #{employee.email}
+            div#employee-info.container
+                div.title
+                    h1(style='width:100%') #{employee.last_name}, #{employee.first_name}
+                div.group-content
+                    a.content-heading(href='#' data-target-id='personal-info-content')
+                        p.heading Personal Information
+                    a.has-text-link.expand-collapse(href='#' data-target-id='personal-info-content') Collapse
+                        span.icon: i.fa.fa-angle-down
+                    div#personal-info-content
+                        div.columns
+                            div.column.is-6
+                                div
+                                    strong Permanent Address -
+                                    if employee.person_streetaddress
+                                        span #{employee.person_streetaddress}, #{employee.person_city}, #{employee.person_state} #{employee.person_zipcode}
+                                div
+                                    strong Phone Number -
+                                    span #{employee.phone_number.substring(0, 3)}-#{employee.phone_number.substring(3, 6)}-#{employee.phone_number.substring(6)}
+                                div
+                                    strong Email -
+                                    span #{employee.email}
+                            div.column.is-6
+                                if employee.ssn
+                                    div
+                                        strong SSN -
+                                        span#masked-ssn xxx-xx-#{employee.ssn.substring(5)}
+                                        span#full-ssn #{employee.ssn.substring(0, 3)}-#{employee.ssn.substring(3, 5)}-#{employee.ssn.substring(5)}
+                                        button#show-ssn.button.is-danger.is-outlined.is-small Show
+                                div
+                                    strong Date of Hire -
+                                    span.date=employee.hire_date
+                div.group-content
+                    a.content-heading(href='#' data-target-id='job-content')
+                        p.heading Jobs
+                        if jobs
+                            span.heading-details (#{jobs.length} #{jobs.length === 1 ? 'Item' : 'Items'})
+                        else
+                            span.heading-details (0 Items)
+                    a.has-text-link.expand-collapse(href='#' data-target-id='leasing-content') Collapse
+                        span.icon: i.fa.fa-angle-down
+                    div#job-content
+                        if jobs && jobs.length
+                            table.table.is-hoverable
+                                thead: tr
+                                    th Title
+                                    th Start Date
+                                    th End Date
+                                    th Pay
+                                    th Pay Type
+                                tbody: for job in jobs
+                                    tr
+                                        td=job.job_title
+                                        td.date=job.job_start_date
+                                        td.date=job.job_end_date
+                                        td.monetary=job.pay
+                                        td=job.pay_type
+                        else
+                            p No Jobs
         include ../includes/foot

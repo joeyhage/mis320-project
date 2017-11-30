@@ -18,7 +18,7 @@ const clientQuery = async (queryString, params) => {
 		client = await pool.connect();
 		return await query(client, queryString, params);
 	} catch (err) {
-		console.trace(new Error(err));
+		console.error(new Error(err), queryString, params);
 	} finally {
 		client.release();
 	}
@@ -28,7 +28,7 @@ const poolQuery = async (queryString, params) => {
 	try {
 		return await query(pool, queryString, params);
 	} catch (err) {
-		console.trace(new Error(err));
+		console.error(new Error(err), queryString, params);
 	}
 };
 
@@ -84,7 +84,7 @@ const searchTenants = async ({search, property, tenantStatus}) => {
 	setTenantStatus(rows);
 	if (process.env.DEBUG) {
 		console.log('sqlUtil - searchTenants');
-		console.dir(rows);
+		console.log(JSON.stringify(rows));
 	}
 	return {tenants: rows};
 };
@@ -100,12 +100,22 @@ const getEmployees = async () => {
 };
 
 const getEmployeeByID = async employeeID => {
-	const rows = await poolQuery(
-		'select * from person, employee e left outer join job j on j.employeeid=e.employeeid ' +
-		'where personid=e.employeeid and e.employeeid=$1 and job_end_date is null',
-		[employeeID]
-	);
-	return {employee: rows[0]};
+	return await promiseMapAll({
+		employee: async () => {
+			const rows = await clientQuery(
+				'select * from person, employee e left outer join job j on j.employeeid=e.employeeid ' +
+				'where personid=e.employeeid and e.employeeid=$1 and job_end_date is null',
+				[employeeID]
+			);
+			return rows[0];
+		},
+		jobs: async () => {
+			return await clientQuery(
+				'select * from job where employeeid=$1 order by job_start_date desc',
+				[employeeID]
+			);
+		}
+	});
 };
 
 const searchEmployees = async searchQuery => {
@@ -164,6 +174,41 @@ const createEmployee = async employee => {
 	};
 };
 
+const getBills = async () => {
+	const rows = await poolQuery(
+		'select tb.billid, due_date, payment_date, expense_amount, frequency, expense_description, new.bill_amount ' +
+		'from tenant_bill tb, bill_line_item bli, tenant_expense te, (' +
+		'select tb.billid, sum(expense_amount) as bill_amount ' +
+		'from tenant_bill tb, bill_line_item bli, tenant_expense te ' +
+		'where tb.billid=bli.billid and bli.expenseid=te.expenseid group by tb.billid) new ' +
+		'where tb.billid=bli.billid and bli.expenseid=te.expenseid and tb.billid=new.billid order by due_date desc'
+	);
+	const billing = [];
+	for (const row of rows) {
+		let found = false;
+		for (const bill of billing) {
+			if (row.billid === bill[0].billid) {
+				found = true;
+				bill.push(row);
+			}
+		}
+		if (!found || !billing || !billing.length) {
+			billing.push([row]);
+		}
+	}
+	return {billing};
+};
+
+const getContacts = async () => {
+	const rows = await poolQuery(
+		'select (tp.first_name || \' \' || tp.last_name) as tenant_name, ' +
+		'(cp.first_name || \' \' || cp.last_name) as contact_name, relationship_to_tenant, contact_type ' +
+		'from person tp, person cp, contact c, tenant t ' +
+		'where tp.personid=t.tenantid and c.tenantid=t.tenantid and cp.personid=c.personid'
+	);
+	return {contacts: rows};
+};
+
 const formatSearchQuery = search => {
 	let formatted = search.toLowerCase();
 	if (/[0-9]{3}(.?)[0-9]{3}.?[0-9]{4}/.test(search)) {
@@ -187,7 +232,7 @@ const determineTenantStatus = leaseStatus => {
 	if (leaseStatus === 'Active') return 'Current Tenant';
 	if (leaseStatus === 'Complete') return 'Past Tenant';
 	if (leaseStatus === 'Pending') return 'Applied';
-	return '';
+	return 'Not Yet Applied';
 };
 
 const promiseMapAll = async promiseMap => {
@@ -207,5 +252,7 @@ module.exports = {
 	searchEmployees,
 	getPropertyNames,
 	createTenant,
-	createEmployee
+	createEmployee,
+	getBills,
+	getContacts
 };

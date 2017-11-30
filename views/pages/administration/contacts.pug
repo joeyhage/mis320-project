@@ -1,0 +1,19 @@
+html
+    include ../includes/head
+    body
+        include ../includes/navigation
+        div.container
+            if contacts && contacts.length
+                table.table.is-striped.is-hoverable(style='width:100%')
+                    thead: tr
+                        th Tenant Name
+                        th Contact Name
+                        th Relationship
+                        th Type
+                    tbody: for contact in contacts
+                        tr
+                            td=contact.tenant_name
+                            td=contact.contact_name
+                            td=contact.relationship_to_tenant
+                            td=contact.contact_type
+        include ../includes/foot

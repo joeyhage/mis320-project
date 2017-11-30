@@ -3,7 +3,7 @@ html
     body
         include includes/navigation
         div.container
-            div.column.is-7-desktop.is-offset-1-desktop
+            div.column.is-8-desktop.is-offset-1-desktop
                 form#tenant-search(action='/tenants/search' method='get')
                     div.field.is-horizontal
                         div.field-label.is-normal: label.label Search
@@ -38,9 +38,13 @@ html
                                 |
                                 | Current Tenant
                             label.radio
-                                input(type='radio' name='tenantStatus' value='Past Tenant')
+                                input(type='radio' name='tenantStatus' value='Past')
                                 |
                                 | Past Tenant
+                            label.radio
+                                input(type='radio' name='tenantStatus' value='Not Yet Applied')
+                                |
+                                | Not Yet Applied
                     div.field.is-horizontal
                         div.field-label.is-normal
                         div.field-body: div.field: div.control: button.button.is-link.is-outlined(type='submit') Search

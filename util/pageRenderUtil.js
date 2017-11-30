@@ -77,6 +77,18 @@ const getTemplateData = parent => {
 					name: 'Billing',
 					href: '/administration/billing',
 					page: 'billing'
+				}, {
+					name: 'Contacts',
+					href: '/administration/contacts',
+					page: 'contacts'
+				}, {
+					name: 'Notes',
+					href: '/administration/notes',
+					page: 'notes'
+				}, {
+					name: 'Pets',
+					href: '/administration/pets',
+					page: 'pets'
 				}]
 			};
 			break;
@@ -128,6 +140,12 @@ const pageDataSwitch = pageData => ({
 	},
 	'employees/search': async () => {
 		return await sqlUtil.searchEmployees(pageData.search);
+	},
+	'administration/billing': async () => {
+		return await sqlUtil.getBills();
+	},
+	'administration/contacts': async () => {
+		return await sqlUtil.getContacts();
 	}
 });
 
