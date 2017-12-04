@@ -41,3 +41,23 @@ if (form) {
 		});
 	}
 }
+
+const expandCollapseInfo = target => {
+	const content = document.getElementById(target.getAttribute('data-target-id'));
+	let indicatorTarget;
+	if (target.className === 'content-heading') {
+		indicatorTarget = target.nextSibling;
+	} else {
+		indicatorTarget = target;
+	}
+	setTimeout(() => {
+		indicatorTarget.querySelector('i').classList.toggle('up');
+	}, 10);
+	if (indicatorTarget.textContent === 'Show Less') {
+		content.classList.add('is-hidden');
+		indicatorTarget.innerHTML = indicatorTarget.innerHTML.replace('Less', 'More');
+	} else {
+		content.classList.remove('is-hidden');
+		indicatorTarget.innerHTML = indicatorTarget.innerHTML.replace('More', 'Less');
+	}
+};

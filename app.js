@@ -85,11 +85,19 @@ app.use((req, res, next) => {
 	} else if (match = req.path.match(pathUtil.maintenanceSubpagePath)) {
 		req.session.parent = 'maintenance';
 		req.session.page = match[1];
-	} else if (pathUtil.administrationPath.test(req.path)) {
-		req.session.parent = 'administration';
-	} else if (match = req.path.match(pathUtil.administrationSubpagePath)) {
-		req.session.parent = 'administration';
-		req.session.page = match[1];
+	} else if (pathUtil.billingPath.test(req.path)) {
+		req.session.parent = 'billing';
+		req.session.tenantSearch = req.query.search || '';
+		req.session.property = req.query.property || '';
+		req.session.tenantStatus = req.query.tenantStatus || '';
+		req.session.pageData = {
+			search: req.session.tenantSearch,
+			property: req.session.property,
+			tenantStatus: req.session.tenantStatus
+		};
+	} else if (match = req.path.match(pathUtil.billInfoPath)) {
+		req.session.parent = 'billing';
+		req.session.pageData = match[1];
 	} else {
 		req.session.redirectUrl = '/';
 		return next();

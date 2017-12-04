@@ -9,7 +9,7 @@ html
                 div.group-content
                     a.content-heading(href='#' data-target-id='personal-info-content')
                         p.heading Personal Information
-                    a.has-text-link.expand-collapse(href='#' data-target-id='personal-info-content') Collapse
+                    a.has-text-link.expand-collapse(href='#' data-target-id='personal-info-content') Show Less
                         span.icon: i.fa.fa-angle-down
                     div#personal-info-content
                         div.columns
@@ -41,7 +41,7 @@ html
                             span.heading-details (#{jobs.length} #{jobs.length === 1 ? 'Item' : 'Items'})
                         else
                             span.heading-details (0 Items)
-                    a.has-text-link.expand-collapse(href='#' data-target-id='leasing-content') Collapse
+                    a.has-text-link.expand-collapse(href='#' data-target-id='job-content') Show Less
                         span.icon: i.fa.fa-angle-down
                     div#job-content
                         if jobs && jobs.length

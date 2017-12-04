@@ -2,30 +2,5 @@ html
     include includes/head
     body
         include includes/navigation
-        div.container.column.is-8-desktop.is-offset-2-desktop
-            form#employee-search(action='/employees/search' method='get')
-                label.label Employee Search
-                div.field.has-addons
-                    div.control.is-expanded
-                        input.input(
-                            type='text'
-                            name='search'
-                            placeholder='First Name, Last Name, or Job Title'
-                            autofocus
-                        )
-                    div.control: button.button.is-link.is-outlined(type='submit') Search
-            hr
-            table#employees-table.table.is-striped.is-hoverable
-                thead: tr
-                    th First Name
-                    th Last Name
-                    th Job Title
-                if employees
-                    if employees.length > 10
-                        tfoot: +columns
-                    tbody: for employee in employees
-                        tr(id=employee.personid)
-                            td=employee.first_name
-                            td=employee.last_name
-                            td=employee.job_title
+        include includes/employeeSearch
         include includes/foot

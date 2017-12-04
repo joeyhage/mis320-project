@@ -5,8 +5,8 @@ const employeeInfo = document.getElementById('employee-info');
 
 if (employeeSearch) {
 	employeeSearch.addEventListener('submit', event => {
-		const searchQuery = event.target.elements.namedItem('searchQuery').value;
-		if (searchQuery.includes('(') || searchQuery.includes(')')) {
+		const search = event.target.elements.namedItem('search').value;
+		if (search.includes('(') || search.includes(')')) {
 			event.preventDefault();
 		}
 	});
@@ -33,7 +33,7 @@ if (employeeInfo) {
 	const nodeList = document.querySelectorAll('.content-heading');
 	for (const node of nodeList) {
 		node.addEventListener('click', event => {
-			expandCollapseEmployeeInfo(event.currentTarget);
+			expandCollapseInfo(event.currentTarget);
 			event.preventDefault();
 		});
 	}
@@ -58,14 +58,14 @@ if (employeeInfo) {
 				showSsn.classList.add('is-success');
 			}
 		} else if (target.classList.contains('expand-collapse')) {
-			expandCollapseEmployeeInfo(target);
+			expandCollapseInfo(target);
 		} else if (target.nodeName === 'I' || target.nodeName === 'SPAN') {
 			const parent = target.parentNode;
 			const parent2 = parent.parentNode;
 			if (parent.classList.contains('expand-collapse')) {
-				expandCollapseEmployeeInfo(parent);
+				expandCollapseInfo(parent);
 			} else if (parent2.classList.contains('expand-collapse')) {
-				expandCollapseEmployeeInfo(parent2);
+				expandCollapseInfo(parent2);
 			} else if (parent.id === 'display-column-list' || target.id === 'display-column-list') {
 				const columns = document.querySelectorAll('.is-multiline>div.column');
 				for (column of columns) {
@@ -81,23 +81,3 @@ if (employeeInfo) {
 		event.preventDefault();
 	});
 }
-
-const expandCollapseEmployeeInfo = target => {
-	const content = document.getElementById(target.getAttribute('data-target-id'));
-	let indicatorTarget;
-	if (target.className === 'content-heading') {
-		indicatorTarget = target.nextSibling;
-	} else {
-		indicatorTarget = target;
-	}
-	setTimeout(() => {
-		indicatorTarget.querySelector('i').classList.toggle('up');
-	}, 10);
-	if (indicatorTarget.textContent === 'Collapse') {
-		content.classList.add('is-hidden');
-		indicatorTarget.innerHTML = indicatorTarget.innerHTML.replace('Collapse', 'Expand');
-	} else {
-		content.classList.remove('is-hidden');
-		indicatorTarget.innerHTML = indicatorTarget.innerHTML.replace('Expand', 'Collapse');
-	}
-};

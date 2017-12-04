@@ -18,3 +18,13 @@ div.navbar-menu a.navbar-item.is-active, div.navbar-menu a.navbar-link.is-active
 .field.is-horizontal.margin-bottom {
     margin-bottom: 1.5rem;
 }
+.fa.fa-angle-down {
+    -moz-transition: all .5s;
+    -webkit-transition: all .5s;
+    transition: all .5s;
+}
+.fa.fa-angle-down.up {
+    -moz-transform:rotate(-180deg);
+    -webkit-transform:rotate(-180deg);
+    transform:rotate(-180deg);
+}

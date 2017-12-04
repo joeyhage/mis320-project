@@ -7,8 +7,6 @@ if (tenantSearch) {
 	tenantSearch.addEventListener('submit', event => {
 		const elements = event.target.elements;
 		const search = elements.namedItem('search').value;
-		const property = elements.namedItem('property').value;
-		const tenantStatus = elements.namedItem('tenantStatus').value;
 		if (search.includes('(') || search.includes(')')) {
 			event.preventDefault();
 		}
@@ -32,11 +30,19 @@ if (newTenant) {
 	});
 }
 if (tenantInfo) {
-	const nodeList = document.querySelectorAll('.content-heading');
-	for (const node of nodeList) {
+	const contentHeadingList = document.querySelectorAll('.content-heading');
+	for (const node of contentHeadingList) {
 		node.addEventListener('click', event => {
-			expandCollapseTenantInfo(event.currentTarget);
+			expandCollapseInfo(event.currentTarget);
 			event.preventDefault();
+		});
+	}
+	const billingRowList = document.querySelectorAll('#billing-content tbody>tr');
+	for (const node of billingRowList) {
+		node.addEventListener('click', ({target}) => {
+			if (target.tagName === 'TD') {
+				window.location.href = `/billing/${tenantInfo.getAttribute('data-tenant-id')}`;
+			}
 		});
 	}
 	tenantInfo.addEventListener('click', event => {
@@ -60,46 +66,28 @@ if (tenantInfo) {
 				showSsn.classList.add('is-success');
 			}
 		} else if (target.classList.contains('expand-collapse')) {
-			expandCollapseTenantInfo(target);
+			expandCollapseInfo(target);
 		} else if (target.nodeName === 'I' || target.nodeName === 'SPAN') {
 			const parent = target.parentNode;
 			const parent2 = parent.parentNode;
 			if (parent.classList.contains('expand-collapse')) {
-				expandCollapseTenantInfo(parent);
+				expandCollapseInfo(parent);
 			} else if (parent2.classList.contains('expand-collapse')) {
-				expandCollapseTenantInfo(parent2);
+				expandCollapseInfo(parent2);
 			} else if (parent.id === 'display-column-list' || target.id === 'display-column-list') {
 				const columns = document.querySelectorAll('.is-multiline>div.column');
 				for (column of columns) {
-					column.style.width = '100%';
+					column.classList.remove('is-6');
+					column.classList.add('is-12');
 				}
 			} else if (parent.id === 'display-column-group' || target.id === 'display-column-group') {
 				const columns = document.querySelectorAll('.is-multiline>div.column');
 				for (column of columns) {
-					column.style.width = '50%';
+					column.classList.remove('is-12');
+					column.classList.add('is-6');
 				}
 			}
 		}
 		event.preventDefault();
 	});
 }
-
-const expandCollapseTenantInfo = target => {
-	const content = document.getElementById(target.getAttribute('data-target-id'));
-	let indicatorTarget;
-	if (target.className === 'content-heading') {
-		indicatorTarget = target.nextSibling;
-	} else {
-		indicatorTarget = target;
-	}
-	setTimeout(() => {
-		indicatorTarget.querySelector('i').classList.toggle('up');
-	}, 10);
-	if (indicatorTarget.textContent === 'Collapse') {
-		content.classList.add('is-hidden');
-		indicatorTarget.innerHTML = indicatorTarget.innerHTML.replace('Collapse', 'Expand');
-	} else {
-		content.classList.remove('is-hidden');
-		indicatorTarget.innerHTML = indicatorTarget.innerHTML.replace('Expand', 'Collapse');
-	}
-};

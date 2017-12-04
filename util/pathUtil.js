@@ -13,14 +13,14 @@ const employeesSubpagePath = new RegExp(/^\/employees\/([a-z-]+)(\/)?$/);
 const maintenancePath = new RegExp(/^\/maintenance(\/)?$/);
 const maintenanceSubpagePath = new RegExp(/^\/maintenance\/([a-z-]+)(\/)?$/);
 
-const administrationPath = new RegExp(/^\/administration(\/)?$/);
-const administrationSubpagePath = new RegExp(/^\/administration\/([a-z-]+)(\/)?$/);
+const billingPath = new RegExp(/^\/billing(\/)?$/);
+const billInfoPath = new RegExp(/^\/billing\/([0-9]+)(\/)?$/);
 
 const simplePaths = [dashboardPath,
 	tenantsPath, tenantSearchPath, tenantsSubpagePath,
 	employeesPath, employeeSearchPath, employeesSubpagePath,
 	maintenancePath, maintenanceSubpagePath,
-	administrationPath, administrationSubpagePath];
+	billingPath, billInfoPath];
 
 module.exports = {
 	dashboardPath,
@@ -34,7 +34,7 @@ module.exports = {
 	employeesSubpagePath,
 	maintenancePath,
 	maintenanceSubpagePath,
-	administrationPath,
-	administrationSubpagePath,
+	billingPath,
+	billInfoPath,
 	simplePaths
 };

@@ -32,6 +32,26 @@ const poolQuery = async (queryString, params) => {
 	}
 };
 
+const vacantUnits = async () => {
+	const results = await clientQuery('select count(*) as vacant_units from unit where unit_status=\'Vacant\'');
+	return results[0];
+};
+
+const unassignedMaintenanceOrders = async () => {
+	const results = await clientQuery(
+		'select count(*) as unassigned from maintenance_order where orderid not in (select orderid from maintenance_assignment)'
+	);
+	return results[0];
+};
+
+const lateRent = async () => {
+	const results = await clientQuery(
+		'select sum(expense_amount) as late_rent from tenant_bill tb, tenant_expense te, bill_line_item bli ' +
+		'where tb.billid=bli.billid and bli.expenseid=te.expenseid and tb.payment_date is null and tb.due_date<current_date'
+	);
+	return results[0];
+};
+
 const getTenants = async () => {
 	const tenantsQuery = queryBuilder.tenantsQuery();
 	const rows = await poolQuery(tenantsQuery.query);
@@ -124,7 +144,7 @@ const searchEmployees = async searchQuery => {
 		'select * from person, employee e ' +
 		'left outer join job j on j.employeeid=e.employeeid ' +
 		'where personid=e.employeeid and job_end_date is null and (' +
-		'lower(first_name) like $1 or lower(last_name) like $1 or job_title like $1 ' +
+		'lower(first_name) like $1 or lower(last_name) like $1 or lower(job_title) like $1 ' +
 		'or lower(first_name || \' \' || last_name) like $1)' +
 		'order by personid desc',
 		[`%${formattedSearchQuery}%`]
@@ -174,15 +194,25 @@ const createEmployee = async employee => {
 	};
 };
 
-const getBills = async () => {
+const openMaintenanceOrders = async () => {
+	const results = await poolQuery('select * from ' +
+		'(select count(*) as open_work_orders from work_order, maintenance_assignment where work_orderid=orderid and completion_date is null) work_orders, ' +
+		'(select count(*) as open_purchase_orders from purchase_order, maintenance_assignment where purchase_orderid=orderid and completion_date is null) purchase_orders');
+	return results[0];
+};
+
+const getBills = async tenantid => {
 	const rows = await poolQuery(
-		'select tb.billid, due_date, payment_date, expense_amount, frequency, expense_description, new.bill_amount ' +
-		'from tenant_bill tb, bill_line_item bli, tenant_expense te, (' +
+		'select first_name, last_name, personid, tb.billid, due_date, payment_date, expense_amount, frequency, expense_description, new.bill_amount ' +
+		'from person, tenant t, tenant_bill tb, bill_line_item bli, tenant_expense te, (' +
 		'select tb.billid, sum(expense_amount) as bill_amount ' +
 		'from tenant_bill tb, bill_line_item bli, tenant_expense te ' +
 		'where tb.billid=bli.billid and bli.expenseid=te.expenseid group by tb.billid) new ' +
-		'where tb.billid=bli.billid and bli.expenseid=te.expenseid and tb.billid=new.billid order by due_date desc'
+		'where t.tenantid=tb.tenantid and personid=t.tenantid and tb.billid=bli.billid and bli.expenseid=te.expenseid and ' +
+		'tb.billid=new.billid and t.tenantid=$1',
+		[tenantid]
 	);
+
 	const billing = [];
 	for (const row of rows) {
 		let found = false;
@@ -201,7 +231,7 @@ const getBills = async () => {
 
 const getContacts = async () => {
 	const rows = await poolQuery(
-		'select (tp.first_name || \' \' || tp.last_name) as tenant_name, ' +
+		'select tp.personid as tenantid, (tp.first_name || \' \' || tp.last_name) as tenant_name, ' +
 		'(cp.first_name || \' \' || cp.last_name) as contact_name, relationship_to_tenant, contact_type ' +
 		'from person tp, person cp, contact c, tenant t ' +
 		'where tp.personid=t.tenantid and c.tenantid=t.tenantid and cp.personid=c.personid'
@@ -244,6 +274,9 @@ const promiseMapAll = async promiseMap => {
 };
 
 module.exports = {
+	vacantUnits,
+	unassignedMaintenanceOrders,
+	lateRent,
 	getTenants,
 	getTenantByID,
 	searchTenants,
@@ -253,6 +286,6 @@ module.exports = {
 	getPropertyNames,
 	createTenant,
 	createEmployee,
-	getBills,
-	getContacts
+	openMaintenanceOrders,
+	getBills
 };

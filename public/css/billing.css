@@ -1,0 +1,12 @@
+.container .card strong {
+    margin-right: 5px;
+}
+table {
+    width: 100%;
+}
+table tbody>tr {
+    cursor: pointer;
+}
+nav {
+    margin-bottom: 40px;
+}

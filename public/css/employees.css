@@ -24,16 +24,6 @@ table {
 .group-content a.expand-collapse {
     float: right;
 }
-.fa.fa-angle-down {
-    -moz-transition: all .5s;
-    -webkit-transition: all .5s;
-    transition: all .5s;
-}
-.fa.fa-angle-down.up {
-    -moz-transform:rotate(-180deg);
-    -webkit-transform:rotate(-180deg);
-    transform:rotate(-180deg);
-}
 .content-heading {
     border-bottom: 1px solid #384b6c;
     cursor: pointer;

@@ -1,0 +1,66 @@
+div.container
+    div.column.is-8-desktop.is-offset-1-desktop
+        form#tenant-search(action=formActionUrl method='get')
+            div.field.is-horizontal
+                div.field-label.is-normal: label.label Search
+                div.field-body: div.field: div.control
+                    input.input(
+                        type='text'
+                        name='search'
+                        placeholder='First Name, Last Name, Phone #, or Email'
+                        autofocus
+                    )
+            div.field.is-horizontal
+                div.field-label.is-normal: label.label Property
+                div.field-body: div.field: div.control: div.select.is-fullwidth
+                    select(name='property')
+                        option(value='' selected) Any
+                        if properties
+                            for property in properties
+                                option(value=property.property_name)=property.property_name
+            div.field.is-horizontal(class=(parent === 'administration' && 'is-hidden'))
+                div.field-label: label.label Tenant Status
+                div.field-body: div.field: div.control
+                    div.field-body: div.field: div.control
+                        label.radio
+                            input(type='radio' name='tenantStatus' value='' checked=(!pageData || '' === pageData.tenantStatus))
+                            |
+                            | Any
+                        label.radio
+                            input(type='radio' name='tenantStatus' value='Applied' checked=(pageData && 'Applied' === pageData.tenantStatus))
+                            |
+                            | Applied
+                        label.radio
+                            input(type='radio' name='tenantStatus' value='Current Tenant' checked=(pageData && 'Current Tenant' === pageData.tenantStatus))
+                            |
+                            | Current Tenant
+                        label.radio
+                            input(type='radio' name='tenantStatus' value='Past' checked=(pageData && 'Past' === pageData.tenantStatus))
+                            |
+                            | Past Tenant
+                        label.radio
+                            input(type='radio' name='tenantStatus' value='Not Yet Applied' checked=(pageData && 'Not Yet Applied' === pageData.tenantStatus))
+                            |
+                            | Not Yet Applied
+            div.field.is-horizontal
+                div.field-label.is-normal
+                div.field-body: div.field: div.control: button.button.is-link.is-outlined(type='submit') Search
+    div.column.is-10-desktop.is-offset-1-desktop
+        hr
+        table#tenants-table.table.is-striped.is-hoverable
+            thead: tr
+                th First Name
+                th Last Name
+                th Unit Number
+                th Property Name
+                th Status
+            if tenants
+                if tenants.length > 10
+                    tfoot: +columns
+                tbody: for tenant in tenants
+                    tr(id=tenant.personid)
+                        td=tenant.first_name
+                        td=tenant.last_name
+                        td=tenant.unit_number
+                        td=tenant.property_name
+                        td=tenant.tenant_status

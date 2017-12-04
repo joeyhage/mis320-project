@@ -7,6 +7,9 @@ table {
 #personal-info-content strong {
     margin-right: 5px;
 }
+#parking-content span:first-child {
+    margin-right: 5px;
+}
 #show-ssn {
     margin-left: 5px;
 }
@@ -23,16 +26,6 @@ table {
 }
 .group-content a.expand-collapse {
     float: right;
-}
-.fa.fa-angle-down {
-    -moz-transition: all .5s;
-    -webkit-transition: all .5s;
-    transition: all .5s;
-}
-.fa.fa-angle-down.up {
-    -moz-transform:rotate(-180deg);
-    -webkit-transform:rotate(-180deg);
-    transform:rotate(-180deg);
 }
 .content-heading {
     border-bottom: 1px solid #384b6c;
@@ -55,4 +48,7 @@ div.title {
 }
 div.title a {
     margin: 10px;
+}
+#billing-content tbody>tr {
+
 }

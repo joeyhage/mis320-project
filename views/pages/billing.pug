@@ -1,0 +1,46 @@
+html
+    include includes/head
+    body
+        include includes/navigation
+        div#billing-info.container
+            if (billing)
+                if (billing.length)
+                    for bill in billing
+                        div.card
+                            header.card-header
+                                div.card-header-title
+                                    a(href=`/tenants/${bill[0].personid}`) #{bill[0].last_name}, #{bill[0].first_name}
+                                    span -
+                                    span.date=bill[0].due_date
+                                a.has-text-link.expand-collapse.card-header-icon(href='#' data-target-id=bill[0].billid) Show More
+                                    span.icon: i.fa.fa-angle-down.up
+                            div.card-content.is-hidden(id=bill[0].billid)
+                                div
+                                    strong Total -
+                                    span.monetary=bill[0].bill_amount
+                                div
+                                    strong Due Date -
+                                    span.date=bill[0].due_date
+                                div
+                                    strong Payment Date -
+                                    if bill[0].payment_date
+                                        span.date=bill[0].payment_date
+                                    else
+                                        span Not Paid
+                                div
+                                    strong Expenses:
+                                    table.table.is-striped.is-hoverable(style='width:100%')
+                                        thead: tr
+                                            td Amount
+                                            td Frequency
+                                            td Description
+                                        tbody: for expense in bill
+                                            tr
+                                                td.monetary=expense.expense_amount
+                                                td=expense.frequency
+                                                td(style='overflow:wrap')=expense.expense_description
+                else
+                    h1.title No bills
+            else
+                include includes/tenantSearch
+        include includes/foot

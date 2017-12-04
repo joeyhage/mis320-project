@@ -70,26 +70,9 @@ const getTemplateData = parent => {
 				}],
 			};
 			break;
-		case 'administration':
+		case 'billing':
 			return {
-				title: 'Administration',
-				subheadings: [{
-					name: 'Billing',
-					href: '/administration/billing',
-					page: 'billing'
-				}, {
-					name: 'Contacts',
-					href: '/administration/contacts',
-					page: 'contacts'
-				}, {
-					name: 'Notes',
-					href: '/administration/notes',
-					page: 'notes'
-				}, {
-					name: 'Pets',
-					href: '/administration/pets',
-					page: 'pets'
-				}]
+				title: 'Billing'
 			};
 			break;
 		default:
@@ -109,6 +92,18 @@ const getPageData = async (page, pageData) => {
 };
 
 const pageDataSwitch = pageData => ({
+	'dashboard': async () => {
+		const results = await Promise.all([
+			sqlUtil.vacantUnits(),
+			sqlUtil.unassignedMaintenanceOrders(),
+			sqlUtil.lateRent()
+		]);
+		return {
+			...results[0],
+			...results[1],
+			...results[2]
+		};
+	},
 	'tenants': async () => {
 		const results = await Promise.all([sqlUtil.getTenants(), sqlUtil.getPropertyNames()]);
 		return results.reduce((accumulator, currentValue) => {
@@ -117,7 +112,7 @@ const pageDataSwitch = pageData => ({
 				...accumulator,
 				[key]: currentValue[key]
 			};
-		}, {});
+		}, {formActionUrl: '/tenants/search'});
 	},
 	'tenants/tenant': async () => {
 		return await sqlUtil.getTenantByID(parseInt(pageData));
@@ -130,7 +125,7 @@ const pageDataSwitch = pageData => ({
 				...accumulator,
 				[key]: currentValue[key]
 			};
-		}, {});
+		}, {formActionUrl: '/tenants/search'});
 	},
 	'employees': async () => {
 		return await sqlUtil.getEmployees();
@@ -141,11 +136,22 @@ const pageDataSwitch = pageData => ({
 	'employees/search': async () => {
 		return await sqlUtil.searchEmployees(pageData.search);
 	},
-	'administration/billing': async () => {
-		return await sqlUtil.getBills();
+	'maintenance': async () => {
+		return await sqlUtil.openMaintenanceOrders();
 	},
-	'administration/contacts': async () => {
-		return await sqlUtil.getContacts();
+	'billing': async () => {
+		const searchTenants = async () => {
+			const results = await Promise.all([sqlUtil.searchTenants(pageData), sqlUtil.getPropertyNames()]);
+			return results.reduce((accumulator, currentValue) => {
+				const key = Object.keys(currentValue)[0];
+				return {
+					...accumulator,
+					[key]: currentValue[key]
+				};
+			}, {});
+		};
+		const results = !pageData || pageData.hasOwnProperty('search') ? await searchTenants() : await sqlUtil.getBills(parseInt(pageData));
+		return {...results, formActionUrl: '/billing'}
 	}
 });
 

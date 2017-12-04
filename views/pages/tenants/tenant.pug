@@ -3,13 +3,13 @@ html
     body
         include ../includes/navigation
         if (tenant)
-            div#tenant-info.container
+            div#tenant-info.container(data-tenant-id=tenant.personid)
                 div.title
                     h1(style='width:100%') #{tenant.last_name}, #{tenant.first_name}
                 div.group-content
                     a.content-heading(href='#' data-target-id='personal-info-content')
                         p.heading Personal Information
-                    a.has-text-link.expand-collapse(href='#' data-target-id='personal-info-content') Collapse
+                    a.has-text-link.expand-collapse(href='#' data-target-id='personal-info-content') Show Less
                         span.icon: i.fa.fa-angle-down
                     div#personal-info-content
                         div.columns
@@ -39,7 +39,7 @@ html
                             span.heading-details (#{leasing.length} #{leasing.length === 1 ? 'Item' : 'Items'})
                         else
                             span.heading-details (0 Items)
-                    a.has-text-link.expand-collapse(href='#' data-target-id='leasing-content') Collapse
+                    a.has-text-link.expand-collapse(href='#' data-target-id='leasing-content') Show Less
                         span.icon: i.fa.fa-angle-down
                     div#leasing-content
                         if leasing && leasing.length
@@ -75,7 +75,7 @@ html
                                 span.heading-details (#{service_requests.length} #{service_requests.length === 1 ? 'Item' : 'Items'})
                             else
                                 span.heading-details (0 Items)
-                        a.has-text-link.expand-collapse(href='#' data-target-id='service-requests-content') Expand
+                        a.has-text-link.expand-collapse(href='#' data-target-id='service-requests-content') Show More
                             span.icon:  i.fa.fa-angle-down.up
                         div#service-requests-content.is-hidden
                             if service_requests && service_requests.length
@@ -100,7 +100,7 @@ html
                                 span.heading-details (#{bills.length} #{bills.length === 1 ? 'Item' : 'Items'})
                             else
                                 span.heading-details (0 Items)
-                        a.has-text-link.expand-collapse(href='#' data-target-id='billing-content') Expand
+                        a.has-text-link.expand-collapse(href='#' data-target-id='billing-content') Show More
                             span.icon: i.fa.fa-angle-down.up
                         div#billing-content.is-hidden
                             if bills && bills.length
@@ -110,7 +110,7 @@ html
                                         th Due Date
                                         th Payment Date
                                     tbody: for bill in bills
-                                        tr
+                                        tr(id=bill.billid)
                                             td.monetary=bill.bill_amount
                                             td.date=bill.due_date
                                             td.date=bill.payment_date
@@ -123,10 +123,26 @@ html
                                 span.heading-details (#{parking.length} #{parking.length === 1 ? 'Item' : 'Items'})
                             else
                                 span.heading-details (0 Items)
-                        a.has-text-link.expand-collapse(href='#' data-target-id='parking-content') Expand
+                        a.has-text-link.expand-collapse(href='#' data-target-id='parking-content') Show More
                             span.icon:  i.fa.fa-angle-down.up
                         div#parking-content.is-hidden
                             if parking && parking.length
+                                h1.is-size-6: strong(style='text-decoration:underline') Current Vehicle
+                                div.columns
+                                    div.column.is-6
+                                        div
+                                            span License Plate -
+                                            span=parking[0].plate_no
+                                        div
+                                            span Plate State -
+                                            span=parking[0].plate_state
+                                    div.column.is-6
+                                        div
+                                            span Color -
+                                            span=parking[0].color
+                                        div
+                                            span Motorcycle? -
+                                            span=(parking[0].is_motorcycle ? 'Yes' : 'No')
                                 table.table.is-hoverable
                                     thead: tr
                                         th Plate
@@ -150,7 +166,7 @@ html
                                 span.heading-details (#{notes.length} #{notes.length === 1 ? 'Item' : 'Items'})
                             else
                                 span.heading-details (0 Items)
-                        a.has-text-link.expand-collapse(href='#' data-target-id='notes-content') Expand
+                        a.has-text-link.expand-collapse(href='#' data-target-id='notes-content') Show More
                             span.icon:  i.fa.fa-angle-down.up
                         div#notes-content.is-hidden
                             if notes && notes.length
@@ -173,7 +189,7 @@ html
                                 span.heading-details (#{contacts.length} #{contacts.length === 1 ? 'Item' : 'Items'})
                             else
                                 span.heading-details (0 Items)
-                        a.has-text-link.expand-collapse(href='#' data-target-id='contacts-content') Expand
+                        a.has-text-link.expand-collapse(href='#' data-target-id='contacts-content') Show More
                             span.icon:  i.fa.fa-angle-down.up
                         div#contacts-content.is-hidden
                             if contacts && contacts.length
@@ -201,7 +217,7 @@ html
                                 span.heading-details (#{pets.length} #{pets.length === 1 ? 'Item' : 'Items'})
                             else
                                 span.heading-details (0 Items)
-                        a.has-text-link.expand-collapse(href='#' data-target-id='pets-content') Expand
+                        a.has-text-link.expand-collapse(href='#' data-target-id='pets-content') Show More
                             span.icon:  i.fa.fa-angle-down.up
                         div#pets-content.is-hidden
                             if pets && pets.length
