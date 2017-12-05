@@ -3,12 +3,13 @@ const tenantsQuery = (search, property, tenantStatus) => {
 	const where = ' where personid=t.tenantid';
 	const orderBy = ' order by personid desc';
 	const allTenants = ' left outer join (' +
-		'select l.*, u.unit_number, property_name ' +
-		'from lease l, unit u, property p ' +
-		'where l.unitid=u.unitid and u.propertyid=p.propertyid and lease_status=\'Active\') ' +
+		'select l1.*, u.unit_number, property_name ' +
+		'from lease l1, unit u, property p ' +
+		'where l1.unitid=u.unitid and u.propertyid=p.propertyid and l1.leaseid in ' +
+		'(select l2.leaseid from lease l2 where l1.tenantid=l2.tenantid order by l2.lease_end_date desc limit 1))' +
 		'lease on t.tenantid=lease.tenantid';
 
-	let query = selectFrom + (tenantStatus && tenantStatus !== 'Current Tenant' ? where : allTenants + where);
+	let query = selectFrom + allTenants + where;
 	const params = [];
 	if (search) {
 		query += getSearchQuery(search);

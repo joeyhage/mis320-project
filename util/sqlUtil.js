@@ -196,8 +196,10 @@ const createEmployee = async employee => {
 
 const openMaintenanceOrders = async () => {
 	const results = await poolQuery('select * from ' +
-		'(select count(*) as open_work_orders from work_order, maintenance_assignment where work_orderid=orderid and completion_date is null) work_orders, ' +
-		'(select count(*) as open_purchase_orders from purchase_order, maintenance_assignment where purchase_orderid=orderid and completion_date is null) purchase_orders');
+		'(select count(*) as open_work_orders from work_order, maintenance_assignment ' +
+		'where (work_orderid=orderid and completion_date is null) or work_orderid not in (select orderid from maintenance_assignment)) work_orders, ' +
+		'(select count(*) as open_purchase_orders from purchase_order, maintenance_assignment ' +
+		'where (purchase_orderid=orderid and completion_date is null) or purchase_orderid not in (select orderid from maintenance_assignment)) purchase_orders');
 	return results[0];
 };
 
@@ -209,7 +211,7 @@ const getBills = async tenantid => {
 		'from tenant_bill tb, bill_line_item bli, tenant_expense te ' +
 		'where tb.billid=bli.billid and bli.expenseid=te.expenseid group by tb.billid) new ' +
 		'where t.tenantid=tb.tenantid and personid=t.tenantid and tb.billid=bli.billid and bli.expenseid=te.expenseid and ' +
-		'tb.billid=new.billid and t.tenantid=$1',
+		'tb.billid=new.billid and t.tenantid=$1 order by due_date desc',
 		[tenantid]
 	);
 
